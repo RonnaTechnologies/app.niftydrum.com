@@ -149,14 +149,13 @@
     <main>
       <div class="container">
         <div class="grid">
-          <div style="border: 1px solid red;" class="column col-4 col-span-4">
+          <div class="column col-4 col-span-4" style="text-align: center;">
             Velocity curve
-            <hr>
-            <div id="container">
+            <div id="curve_container">
             </div>
           </div>
-          <div style="border: 1px solid red;" class="column col-1">Gain</div>
-          <div style="border: 1px solid red;" class="column col-7 col-span-7">Parameters</div>
+          <div style="text-align: center;" class="column col-1">Gain</div>
+          <div style="text-align: center;" class="column col-7 col-span-7">Parameters</div>
         </div>
       </div>
     </main>
@@ -173,26 +172,32 @@
       </article>
     </dialog>
     <script>
+
       Number.prototype.clamp = function (min, max) 
       {
         return Math.min(Math.max(this, min), max);
       };
-      var width = 256;
-      var height = 256;
+
+      var stage = new Konva.Stage(
+        {
+          container: 'curve_container',
+          width: 256,
+          height: 256,
+        });
 
       function drag_constrained(pos)
       {
         return {
           x: this.absolutePosition().x,
-          y: pos.y.clamp(0, 256),
+          y: pos.y.clamp(0, stage.height()),
         };
       }
 
       function drag(pos)
       {
         return {
-          x: pos.x.clamp(0, 256),
-          y: pos.y.clamp(0, 256),
+          x: pos.x.clamp(0, stage.width()),
+          y: pos.y.clamp(0, stage.height()),
         };
       }
       // function to build anchor point
@@ -238,12 +243,6 @@
         return anchor;
       }
 
-      var stage = new Konva.Stage(
-        {
-          container: 'container',
-          width: width,
-          height: height,
-        });
 
       var layer = new Konva.Layer();
       stage.add(layer);
@@ -306,66 +305,45 @@
         });
       layer.add(bezierLinePath);
 
-
+      console.log(stage.height)
       var bezier =
       {
-        start: buildAnchor(0, 256, true),
-        control1: buildAnchor(64, 192),
-        control2: buildAnchor(192, 128),
-        end: buildAnchor(256, 0, true),
+        start: buildAnchor(0, stage.height(), true),
+        control1: buildAnchor(stage.width() / 4, 3 * stage.height() / 4),
+        control2: buildAnchor(3 * stage.width() / 4, stage.height() / 2),
+        end: buildAnchor(stage.width(), 0, true),
       };
 
       updateDottedLines();
 
-      function export_curve()
+      // Function to make the stage responsive
+      function fitStageIntoParentContainer()
       {
-        const P0_x = bezier.start.attrs.x;
-        const P0_y = bezier.start.attrs.y;
-        const P1_x = bezier.control1.attrs.x;
-        const P1_y = bezier.control1.attrs.y;
-        const P2_x = bezier.control2.attrs.x;
-        const P2_y = bezier.control2.attrs.y;
-        const P3_x = bezier.end.attrs.x;
-        const P3_y = bezier.end.attrs.y;
-        const N = 2048
-        const bx = new Array(N)
-        const by = new Array(N)
-        const data = new Array(N)
+        // Get the container element
+        const container = document.getElementById('curve_container');
 
-        for (let i = 0; i < by.length; ++i)
-        {
-          const t = i / by.length
-          bx[i] = Math.pow(1 - t, 3) * P0_x + 3 * Math.pow(1 - t, 2) * t * P1_x + 3 * (1 - t) * Math.pow(t, 2) * P2_x + Math.pow(t, 3) * P3_x
-          by[i] = P0_y - (Math.pow(1 - t, 3) * P0_y + 3 * Math.pow(1 - t, 2) * t * P1_y + 3 * (1 - t) * Math.pow(t, 2) * P2_y + Math.pow(t, 3) * P3_y)
-          data[i] = [bx[i], by[i]]
-        }
+        // Make the container take up the full width
+        container.style.width = '100%';
 
-        const y = new Array(256);
+        // Get current container width
+        const containerWidth = container.offsetWidth;
 
-        for (let x = 0; x < y.length; ++x)
-        {
-          const d = [...bx].map(v => Math.abs(v - x))
-          const i = d.indexOf(Math.min(...d))
-          y[x] = Math.round(by[i])
-        }
+        // Calculate scale based on virtual width vs actual width
+        const scale = containerWidth / 256;
 
-        console.log(y)
-
-        const replacer = (key, value) =>
-          value instanceof Object && !(value instanceof Array) ?
-            Object.keys(value)
-              .sort()
-              .reverse()
-              .reduce((sorted, key) => 
-              {
-                sorted[key] = value[key];
-                return sorted
-              }, {}) :
-            value;
-
-        const out_obj = { points: [[P0_x, P0_y], [P1_x, P1_y], [P2_x, P2_y], [P3_x, P3_y]], data: [] }
-        console.log(JSON.stringify(out_obj, replacer))
+        // Set stage dimensions and scale
+        stage.width(256 * scale);
+        stage.height(256 * scale);
+        stage.scale({ x: scale, y: scale });
       }
+
+      // Initial fit
+      fitStageIntoParentContainer();
+
+      // Adapt the stage on window resize
+      window.addEventListener('resize', fitStageIntoParentContainer);
+
+
     </script>
   </body>
 
