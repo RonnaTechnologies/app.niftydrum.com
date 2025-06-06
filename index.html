@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="en">
+
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <!-- <link rel="manifest" href="/site.webmanifest"> -->
+    <link rel="stylesheet" href="/assets/css/pico.pumpkin.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
+    <style>
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        grid-gap: 1rem;
+      }
+
+      .col-4 {
+        grid-column: span 4;
+      }
+
+      .col {
+        grid-column: span 1;
+      }
+
+      .col-7 {
+        grid-column: span 7;
+      }
+    </style>
+
+    <script src="/assets/js/konva.min.js"></script>
+    <script src="/assets/js/script.js" defer></script>
+    <script>
+
+      let firmware_upload = false
+
+      const ev = new EventSource("event")
+
+      ev.onmessage = function (e) 
+      {
+        const data = JSON.parse(e.data);
+
+        if ('value' in data)
+        {
+          document.getElementById("fsr_value").innerText = data.value
+        }
+      }
+
+      async function start_fsr_logger()
+      {
+        const resp = await fetch("/start_fsr_logger");
+        const data = await resp.json()
+      }
+
+      async function stop_fsr_logger()
+      {
+        const resp = await fetch("/stop_fsr_logger");
+        const data = await resp.json()
+      }
+
+      function hide(id)
+      {
+        document.getElementById(id).style.display = 'none'
+      }
+
+      function hide_all()
+      {
+      }
+
+
+      async function upload_firmware()
+      {
+        document.getElementById('fw_upload_button').ariaBusy = true
+        const firmware_file = document.getElementById("firmware_file").files[0]
+        const formData = new FormData();
+
+        formData.append('firmware_file', firmware_file);
+
+        const resp = await fetch('/firmware', { // Your POST endpoint
+          method: 'POST',
+          body: formData // This is your file object
+        })
+        const j = await resp.json() // if the response is a JSON object
+        console.log(j)
+
+        document.getElementById('fw_upload_button').ariaBusy = false
+
+      }
+    </script>
+    <title>NiftyDrum App</title>
+  </head>
+
+  <body style="min-width: 90vw;" class="container-fluid">
+    <header>
+      <nav>
+        <ul>
+          <li>
+            <details class="dropdown">
+              <summary>
+                Sensors
+              </summary>
+              <ul dir="rtl">
+                <li><a href="#">Hi-hat Controller</a></li>
+                <li><a href="#">Hi-hat</a></li>
+                <li><a href="#">Kick</a></li>
+                <li><a href="#">Snare</a></li>
+                <li><a href="#">Crash 1</a></li>
+                <li><a href="#">Tom 1</a></li>
+                <li><a href="#">Tom 3</a></li>
+                <li><a href="#">Ride</a></li>
+                <li><a href="#">Tom 2</a></li>
+                <li><a href="#">Crash 2</a></li>
+              </ul>
+            </details>
+          </li>
+          <li><button class="primary"><svg xmlns="http://www.w3.org/2000/svg" fill="none" width="24" height="24"
+                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+              </svg>
+            </button></li>
+        </ul>
+        <ul>
+          <li>
+            <div style="text-align: center;"><strong>NiftyDrum</strong><br><small>by Ronna Technologies</small></div>
+          </li>
+        </ul>
+        <ul>
+          <li>
+            <button>Settings&nbsp;<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24"
+                height="24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+              </svg>
+            </button>
+            <button class="primary"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24"
+                height="24" stroke-width="1.5" stroke="currentColor" class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+              </svg></button>
+          </li>
+        </ul>
+      </nav>
+    </header>
+    <main>
+      <div class="container">
+        <div class="grid">
+          <div style="border: 1px solid red;" class="column col-4 col-span-4">
+            Velocity curve
+            <hr>
+            <div id="container">
+            </div>
+          </div>
+          <div style="border: 1px solid red;" class="column col-1">Gain</div>
+          <div style="border: 1px solid red;" class="column col-7 col-span-7">Parameters</div>
+        </div>
+      </div>
+    </main>
+
+    <dialog id="about-modal">
+      <article>
+        <header>
+          <button aria-label="Close" rel="prev" data-target="about-modal"></button>
+          <strong>About NiftyDrum App</strong>
+        </header>
+        <p>
+          NiftyDrum App is a <a href="https://ronnatech.com" target="_blank">Ronna Technologies</a> product.
+        </p>
+      </article>
+    </dialog>
+    <script>
+      Number.prototype.clamp = function (min, max) 
+      {
+        return Math.min(Math.max(this, min), max);
+      };
+      var width = 256;
+      var height = 256;
+
+      function drag_constrained(pos)
+      {
+        return {
+          x: this.absolutePosition().x,
+          y: pos.y.clamp(0, 256),
+        };
+      }
+
+      function drag(pos)
+      {
+        return {
+          x: pos.x.clamp(0, 256),
+          y: pos.y.clamp(0, 256),
+        };
+      }
+      // function to build anchor point
+      function buildAnchor(x, y, constrained = false) 
+      {
+
+        const settings =
+        {
+          x: x,
+          y: y,
+          radius: 12,
+          stroke: '#666',
+          fill: '#ddd',
+          strokeWidth: 2,
+          draggable: true,
+          dragBoundFunc: drag
+        };
+        if (constrained)
+        {
+          settings['dragBoundFunc'] = drag_constrained
+        }
+        var anchor = new Konva.Circle(settings);
+        layer.add(anchor);
+
+        // add hover styling
+        anchor.on('mouseover', function ()
+        {
+          document.body.style.cursor = 'pointer';
+          this.strokeWidth(4);
+        });
+
+        anchor.on('mouseout', function () 
+        {
+          document.body.style.cursor = 'default';
+          this.strokeWidth(2);
+        });
+
+        anchor.on('dragmove', function () 
+        {
+          updateDottedLines();
+        });
+
+        return anchor;
+      }
+
+      var stage = new Konva.Stage(
+        {
+          container: 'container',
+          width: width,
+          height: height,
+        });
+
+      var layer = new Konva.Layer();
+      stage.add(layer);
+
+      // function to update line points from anchors
+      function updateDottedLines() 
+      {
+        var b = bezier;
+
+        var bezierLinePath = layer.findOne('#bezierLinePath');
+
+
+        bezierLinePath.points(
+          [
+            b.start.x(),
+            b.start.y(),
+            b.control1.x(),
+            b.control1.y(),
+            b.control2.x(),
+            b.control2.y(),
+            b.end.x(),
+            b.end.y(),
+          ]);
+      }
+
+
+      // we will use custom shape for curve
+      var bezierLine = new Konva.Shape(
+        {
+          stroke: 'orange',
+          strokeWidth: 5,
+          sceneFunc: (ctx, shape) => 
+          {
+            ctx.beginPath();
+            ctx.moveTo(bezier.start.x(), bezier.start.y());
+            ctx.bezierCurveTo(
+              bezier.control1.x(),
+              bezier.control1.y(),
+              bezier.control2.x(),
+              bezier.control2.y(),
+              bezier.end.x(),
+              bezier.end.y()
+            );
+            ctx.fillStrokeShape(shape);
+          },
+        });
+      layer.add(bezierLine);
+
+
+
+      var bezierLinePath = new Konva.Line(
+        {
+          dash: [10, 0, 0, 10],
+          strokeWidth: 3,
+          stroke: 'gray',
+          lineCap: 'round',
+          id: 'bezierLinePath',
+          opacity: 0.3,
+          points: [0, 0],
+        });
+      layer.add(bezierLinePath);
+
+
+      var bezier =
+      {
+        start: buildAnchor(0, 256, true),
+        control1: buildAnchor(64, 192),
+        control2: buildAnchor(192, 128),
+        end: buildAnchor(256, 0, true),
+      };
+
+      updateDottedLines();
+
+      function export_curve()
+      {
+        const P0_x = bezier.start.attrs.x;
+        const P0_y = bezier.start.attrs.y;
+        const P1_x = bezier.control1.attrs.x;
+        const P1_y = bezier.control1.attrs.y;
+        const P2_x = bezier.control2.attrs.x;
+        const P2_y = bezier.control2.attrs.y;
+        const P3_x = bezier.end.attrs.x;
+        const P3_y = bezier.end.attrs.y;
+        const N = 2048
+        const bx = new Array(N)
+        const by = new Array(N)
+        const data = new Array(N)
+
+        for (let i = 0; i < by.length; ++i)
+        {
+          const t = i / by.length
+          bx[i] = Math.pow(1 - t, 3) * P0_x + 3 * Math.pow(1 - t, 2) * t * P1_x + 3 * (1 - t) * Math.pow(t, 2) * P2_x + Math.pow(t, 3) * P3_x
+          by[i] = P0_y - (Math.pow(1 - t, 3) * P0_y + 3 * Math.pow(1 - t, 2) * t * P1_y + 3 * (1 - t) * Math.pow(t, 2) * P2_y + Math.pow(t, 3) * P3_y)
+          data[i] = [bx[i], by[i]]
+        }
+
+        const y = new Array(256);
+
+        for (let x = 0; x < y.length; ++x)
+        {
+          const d = [...bx].map(v => Math.abs(v - x))
+          const i = d.indexOf(Math.min(...d))
+          y[x] = Math.round(by[i])
+        }
+
+        console.log(y)
+
+        const replacer = (key, value) =>
+          value instanceof Object && !(value instanceof Array) ?
+            Object.keys(value)
+              .sort()
+              .reverse()
+              .reduce((sorted, key) => 
+              {
+                sorted[key] = value[key];
+                return sorted
+              }, {}) :
+            value;
+
+        const out_obj = { points: [[P0_x, P0_y], [P1_x, P1_y], [P2_x, P2_y], [P3_x, P3_y]], data: [] }
+        console.log(JSON.stringify(out_obj, replacer))
+      }
+    </script>
+  </body>
+
+</html>
