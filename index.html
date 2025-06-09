@@ -181,8 +181,8 @@
       var stage = new Konva.Stage(
         {
           container: 'curve_container',
-          width: 256,
-          height: 256,
+          width: 512,
+          height: 512,
         });
 
       function drag_constrained(pos)
@@ -329,11 +329,11 @@
         const containerWidth = container.offsetWidth;
 
         // Calculate scale based on virtual width vs actual width
-        const scale = containerWidth / 256;
+        const scale = containerWidth / 512;
 
         // Set stage dimensions and scale
-        stage.width(256 * scale);
-        stage.height(256 * scale);
+        stage.width(512 * scale);
+        stage.height(512 * scale);
         stage.scale({ x: scale, y: scale });
       }
 
