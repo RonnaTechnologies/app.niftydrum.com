@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Gauge Rectangulaire</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 50px;
+      }
+      gauge-bar {
+        display: block;
+        margin-bottom: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <gauge-bar data-value="70" data-threshold="50"></gauge-bar>
+    <label>
+      Seuil (%):
+      <input id="thresholdInput" type="number" min="0" max="100" value="50" />
+    </label>
+
+    <script>
+      const toto = document.querySelector("gauge-bar");
+      setInterval(() => {
+        const rand = Math.random() * 100;
+        toto.dataset.value = rand;
+      }, 100);
+
+      class GaugeBar extends HTMLElement {
+        static get observedAttributes() {
+          return ["data-value", "data-threshold"];
+        }
+
+        constructor() {
+          super();
+          this.canvas = document.createElement("canvas");
+          this.canvas.width = 400;
+          this.canvas.height = 60;
+          this.ctx = this.canvas.getContext("2d");
+          this.shadow = this.attachShadow({ mode: "open" });
+          this.shadow.appendChild(this.canvas);
+
+          this.value = parseFloat(this.getAttribute("data-value")) || 0;
+          this.threshold =
+            parseFloat(this.getAttribute("data-threshold")) || 50;
+
+          this.dragging = false;
+
+          this.canvas.addEventListener(
+            "mousedown",
+            this.onMouseDown.bind(this)
+          );
+          window.addEventListener("mousemove", this.onMouseMove.bind(this));
+          window.addEventListener("mouseup", () => (this.dragging = false));
+        }
+
+        attributeChangedCallback(name, oldValue, newValue) {
+          if (name === "data-value") this.value = parseFloat(newValue);
+          if (name === "data-threshold") this.threshold = parseFloat(newValue);
+          this.draw();
+        }
+
+        connectedCallback() {
+          this.draw();
+        }
+
+        draw() {
+          const ctx = this.ctx;
+          ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+          const width = this.canvas.width - 40;
+          const height = 30;
+          const x = 20;
+          const y = 15;
+
+          // Fond
+          ctx.fillStyle = "#eee";
+          ctx.fillRect(x, y, width, height);
+
+          // Remplissage
+          ctx.fillStyle = "#4CAF50";
+          ctx.fillRect(x, y, width * (this.value / 100), height);
+
+          // Seuil
+          const thresholdX = x + width * (this.threshold / 100);
+          ctx.beginPath();
+          ctx.moveTo(thresholdX, y - 5);
+          ctx.lineTo(thresholdX, y + height + 5);
+          ctx.strokeStyle = "#FF5722";
+          ctx.lineWidth = 2;
+          ctx.stroke();
+
+          // Poignée (draggable)
+          ctx.beginPath();
+          ctx.arc(thresholdX, y + height / 2, 6, 0, Math.PI * 2);
+          ctx.fillStyle = "#FF5722";
+          ctx.fill();
+        }
+
+        onMouseDown(e) {
+          const rect = this.canvas.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const barStart = 20;
+          const barEnd = this.canvas.width - 20;
+
+          if (x >= barStart && x <= barEnd) {
+            this.dragging = true;
+            this.updateThresholdFromX(x);
+          }
+        }
+
+        onMouseMove(e) {
+          if (!this.dragging) return;
+          const rect = this.canvas.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          this.updateThresholdFromX(x);
+        }
+
+        updateThresholdFromX(x) {
+          const barStart = 20;
+          const barEnd = this.canvas.width - 20;
+          let percent = ((x - barStart) / (barEnd - barStart)) * 100;
+          percent = Math.max(0, Math.min(100, percent));
+          this.setAttribute("data-threshold", Math.round(percent));
+          const input = document.querySelector("#thresholdInput");
+          if (input) input.value = Math.round(percent);
+        }
+      }
+
+      customElements.define("gauge-bar", GaugeBar);
+
+      // Lier à l'input
+      document.getElementById("thresholdInput").addEventListener("input", e => {
+        const val = parseInt(e.target.value);
+        const gauge = document.querySelector("gauge-bar");
+        if (val >= 0 && val <= 100) {
+          gauge.setAttribute("data-threshold", val);
+        }
+      });
+    </script>
+  </body>
+</html>
