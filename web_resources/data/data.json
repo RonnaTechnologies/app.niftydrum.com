@@ -1,0 +1,246 @@
+{
+    "kick": {
+        "scanTime": 2000,
+        "maskTime": 20000,
+        "decay": 130000,
+        "threshold": 50,
+        "note": 36,
+        "gain": 65536,
+        "curvePoints": [
+            [
+                0,
+                512
+            ],
+            [
+                128,
+                384
+            ],
+            [
+                384,
+                128
+            ],
+            [
+                512,
+                0
+            ]
+        ]
+    },
+    "snare": {
+        "scanTime": 3000,
+        "maskTime": 20000,
+        "decay": 130000,
+        "threshold": 50,
+        "note": 38,
+        "gain": 65536,
+        "curvePoints": [
+            [
+                0,
+                512
+            ],
+            [
+                128,
+                384
+            ],
+            [
+                384,
+                128
+            ],
+            [
+                512,
+                0
+            ]
+        ]
+    },
+    "hihat": {
+        "scanTime": 3000,
+        "maskTime": 20000,
+        "decay": 130000,
+        "threshold": 50,
+        "note": 42,
+        "gain": 65536,
+        "curvePoints": [
+            [
+                0,
+                512
+            ],
+            [
+                128,
+                384
+            ],
+            [
+                384,
+                128
+            ],
+            [
+                512,
+                0
+            ]
+        ]
+    },
+    "crash1": {
+        "scanTime": 3000,
+        "maskTime": 20000,
+        "decay": 130000,
+        "threshold": 50,
+        "note": 49,
+        "gain": 65536,
+        "curvePoints": [
+            [
+                0,
+                512
+            ],
+            [
+                128,
+                384
+            ],
+            [
+                384,
+                128
+            ],
+            [
+                512,
+                0
+            ]
+        ]
+    },
+    "tom1": {
+        "scanTime": 3000,
+        "maskTime": 20000,
+        "decay": 130000,
+        "threshold": 50,
+        "note": 50,
+        "gain": 65536,
+        "curvePoints": [
+            [
+                0,
+                512
+            ],
+            [
+                128,
+                384
+            ],
+            [
+                384,
+                128
+            ],
+            [
+                512,
+                0
+            ]
+        ]
+    },
+    "tom3": {
+        "scanTime": 3000,
+        "maskTime": 20000,
+        "decay": 130000,
+        "threshold": 50,
+        "note": 41,
+        "gain": 65536,
+        "curvePoints": [
+            [
+                0,
+                512
+            ],
+            [
+                128,
+                384
+            ],
+            [
+                384,
+                128
+            ],
+            [
+                512,
+                0
+            ]
+        ]
+    },
+    "ride": {
+        "scanTime": 3000,
+        "maskTime": 20000,
+        "decay": 130000,
+        "threshold": 50,
+        "note": 51,
+        "gain": 65536,
+        "curvePoints": [
+            [
+                0,
+                512
+            ],
+            [
+                128,
+                384
+            ],
+            [
+                384,
+                128
+            ],
+            [
+                512,
+                0
+            ]
+        ]
+    },
+    "tom2": {
+        "scanTime": 3000,
+        "maskTime": 20000,
+        "decay": 130000,
+        "threshold": 1800,
+        "note": 47,
+        "gain": 65536,
+        "curvePoints": [
+            [
+                0,
+                512
+            ],
+            [
+                128,
+                384
+            ],
+            [
+                384,
+                128
+            ],
+            [
+                512,
+                0
+            ]
+        ]
+    },
+    "crash2": {
+        "scanTime": 3000,
+        "maskTime": 20000,
+        "decay": 130000,
+        "threshold": 1800,
+        "note": 57,
+        "gain": 65536,
+        "curvePoints": [
+            [
+                0,
+                512
+            ],
+            [
+                128,
+                384
+            ],
+            [
+                384,
+                128
+            ],
+            [
+                512,
+                0
+            ]
+        ]
+    },
+    "hhc": {
+        "timeout": 9000,
+        "threshold": 30,
+        "offset": 105
+    },
+    "hhc_trig": {
+        "threshold": 400,
+        "scan": 15000,
+        "vel_thresh": 800
+    }
+}

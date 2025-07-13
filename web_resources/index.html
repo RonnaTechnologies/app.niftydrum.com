@@ -30,33 +30,43 @@
     </center>
 
     <button class="secondary">
-      infos
+      Params
     </button>
 
-    <nav role="group">
-      <select name="sensors" id="sensors-select">
-        <option value="Hi-hat Controller" selected>Hi-hat Controller</option>
-        <option value="Hi-hat">Hi-hat</option>
-        <option value="Kick">Kick</option>
-        <option value="Snare">Snare</option>
-        <option value="Crash 1">Crash 1</option>
-        <option value="Tom 1">Tom 1</option>
-        <option value="Tom 3">Tom 3</option>
-        <option value="Ride">Ride</option>
-        <option value="Tom 2">Tom 2</option>
-        <option value="Crash 2">Crash 2</option>
-      </select>
+    <select name="sensors" id="sensors-select">
+      <option value="hihat" selected>Hi-hat</option>
+      <option value="kick">Kick</option>
+      <option value="snare">Snare</option>
+      <option value="ride">Ride</option>
+      <option value="crash1">Crash 1</option>
+      <option value="crash2">Crash 2</option>
+      <option value="tom1">Tom 1</option>
+      <option value="tom2">Tom 2</option>
+      <option value="tom3">Tom 3</option>
+      <option value="hhc">Hi-hat</option>
+      <option value="hhc_trig">Hi-hat Controller</option>
+    </select>
 
-      <button class="secondary">Preferences</button>
-    </nav>
-
-    <button>Save</button>
+    <button class="secondary" onclick="confirm('All presets will be reset to last configuration')">Reset</button>
+    <button onclick="confirm('Previous configuration will be replaced by the current presets')">Save</button>
   </header>
 
   <main>
     <section>
       Velocity curve
-      <bezier-curve></bezier-curve>
+      <bezier-curve>
+        <svg id="bezier-svg" viewBox="0 -10 256 276" width="256" height="256">
+          <line id="line-p0-p1" class="control-line" x1="0" y1="128" x2="64" y2="64"></line>
+          <line id="line-p2-p3" class="control-line" x1="192" y1="192" x2="255" y2="128"></line>
+      
+          <path id="bezier-curve-path" d="M 0,128 C 64,64 192,192 255,128" />
+      
+          <circle class="bezier-anchor" id="p0" cx="0" cy="128" r="6"></circle>
+          <circle class="bezier-anchor" id="p1" cx="64" cy="64" r="6"></circle>
+          <circle class="bezier-anchor" id="p2" cx="192" cy="192" r="6"></circle>
+          <circle class="bezier-anchor" id="p3" cx="255" cy="128" r="6"></circle>
+        </svg>
+      </bezier-curve>
     </section>
 
     <section>
@@ -72,7 +82,7 @@
 
     <section>
       Parameters
-      <times-control></times-control>
+      <!-- <times-control></times-control> -->
     </section>
   </main>
 
