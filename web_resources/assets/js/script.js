@@ -7,25 +7,27 @@ const gain = document.querySelector('vertical-gauge');
 const bezierCurve = document.querySelector('bezier-curve');
 
 
-async function fetchConfig() {
+async function fetchConfig()
+{
     const response = await fetch('/get_all');
     const configData = await response.json();
     data = configData;
-    
+
 
     console.log(configData, currentSensor, configData[currentSensor]);
 
 
     if (!configData[currentSensor]) return null;
-    
+
     // Update UI
     gain.threshold = configData[currentSensor]?.gain;
-    bezierCurve.values = configData[currentSensor]?.curvePoints;
+    bezierCurve.values = configData[currentSensor]?.curve?.p;
 }
 
 fetchConfig();
 
-sensorsSelect.addEventListener("change", (e) => {
+sensorsSelect.addEventListener("change", (e) =>
+{
     currentSensor = e.target.value;
     fetchConfig();
 })
