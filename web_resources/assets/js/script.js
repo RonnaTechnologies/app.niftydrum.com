@@ -1,3 +1,27 @@
+
+function fixedToFloat(rawValue, intBits, fracBits)
+{
+    // const totalBits = intBits + fracBits;
+    // const maxValue = Math.pow(2, totalBits);
+
+    // Ensure the raw value is within the valid range
+    // if (rawValue >= maxValue)
+    // {
+    //     throw new Error("Raw value out of range");
+    // }
+
+    // Calculate the integer part
+    const integerPart = rawValue >> fracBits;
+
+    // Calculate the fractional part
+    const fractionalPart = (rawValue & ((1 << fracBits) - 1)) / Math.pow(2, fracBits);
+
+    // Combine the integer and fractional parts
+    const floatValue = integerPart + fractionalPart;
+
+    return floatValue.toFixed(2);
+}
+
 const sensorsSelect = document.querySelector("#sensors-select");
 let currentSensor = sensorsSelect.value;
 let data = null;
@@ -20,7 +44,7 @@ async function fetchConfig()
     if (!configData[currentSensor]) return null;
 
     // Update UI
-    gain.threshold = configData[currentSensor]?.gain;
+    gain.threshold = fixedToFloat(configData[currentSensor]?.gain);
     bezierCurve.values = configData[currentSensor]?.curve?.p;
 }
 
@@ -32,28 +56,6 @@ sensorsSelect.addEventListener("change", (e) =>
     fetchConfig();
 })
 
-// function fixedToFloat(rawValue, intBits, fracBits)
-// {
-//     const totalBits = intBits + fracBits;
-//     // const maxValue = Math.pow(2, totalBits);
-
-//     // Ensure the raw value is within the valid range
-//     // if (rawValue >= maxValue)
-//     // {
-//     //     throw new Error("Raw value out of range");
-//     // }
-
-//     // Calculate the integer part
-//     const integerPart = rawValue >> fracBits;
-
-//     // Calculate the fractional part
-//     const fractionalPart = (rawValue & ((1 << fracBits) - 1)) / Math.pow(2, fracBits);
-
-//     // Combine the integer and fractional parts
-//     const floatValue = integerPart + fractionalPart;
-
-//     return floatValue.toFixed(2);
-// }
 
 // let data = {}
 
