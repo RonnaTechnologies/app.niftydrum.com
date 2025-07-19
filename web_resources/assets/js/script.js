@@ -1,6 +1,44 @@
+const sensorsSelect = document.querySelector("#sensors-select");
+let currentSensor = sensorsSelect.value;
+let data = null;
 
-function fixedToFloat(rawValue, intBits, fracBits)
+// Components
+const gain = document.querySelector('vertical-gauge');
+const bezierCurve = document.querySelector('bezier-curve');
+const timeControl = document.querySelector('times-control');
+
+async function fetchConfig()
 {
+    const response = await fetch('/get_all');
+    data = await response.json();
+    updateSensorData();
+}
+
+const updateSensorData = () => {
+    if (!data[currentSensor]) return null;
+
+    if (["hhc", "hhc_trig"].includes(currentSensor)) {
+        console.log("hcc instrument");
+        return;
+    }
+    console.log("default instrument");
+    
+    gain.threshold = fixedToFloat(data[currentSensor]?.gain, 8, 8);
+    bezierCurve.values = data[currentSensor]?.curve?.p;
+    timeControl.scan = data[currentSensor]?.scan;
+    timeControl.mask = data[currentSensor]?.mask;
+    timeControl.decay = data[currentSensor]?.decay;
+    timeControl.threshold = data[currentSensor]?.threshold;
+}
+
+fetchConfig();
+
+sensorsSelect.addEventListener("change", (e) => {
+    currentSensor = e.target.value;
+    fetchConfig();
+})
+
+function fixedToFloat(rawValue, intBits, fracBits) {
     // const totalBits = intBits + fracBits;
     // const maxValue = Math.pow(2, totalBits);
 
@@ -21,40 +59,6 @@ function fixedToFloat(rawValue, intBits, fracBits)
 
     return floatValue.toFixed(2);
 }
-
-const sensorsSelect = document.querySelector("#sensors-select");
-let currentSensor = sensorsSelect.value;
-let data = null;
-
-// Components
-const gain = document.querySelector('vertical-gauge');
-const bezierCurve = document.querySelector('bezier-curve');
-
-
-async function fetchConfig()
-{
-    const response = await fetch('/get_all');
-    const configData = await response.json();
-    data = configData;
-
-
-    console.log(configData, currentSensor, configData[currentSensor]);
-
-
-    if (!configData[currentSensor]) return null;
-
-    // Update UI
-    gain.threshold = fixedToFloat(configData[currentSensor]?.gain);
-    bezierCurve.values = configData[currentSensor]?.curve?.p;
-}
-
-fetchConfig();
-
-sensorsSelect.addEventListener("change", (e) =>
-{
-    currentSensor = e.target.value;
-    fetchConfig();
-})
 
 
 // let data = {}

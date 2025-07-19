@@ -58,9 +58,9 @@
         <svg id="bezier-svg" viewBox="0 -10 256 276" width="256" height="256">
           <line id="line-p0-p1" class="control-line" x1="0" y1="128" x2="64" y2="64"></line>
           <line id="line-p2-p3" class="control-line" x1="192" y1="192" x2="255" y2="128"></line>
-      
+
           <path id="bezier-curve-path" d="M 0,128 C 64,64 192,192 255,128" />
-      
+
           <circle class="bezier-anchor" id="p0" cx="0" cy="128" r="6"></circle>
           <circle class="bezier-anchor" id="p1" cx="64" cy="64" r="6"></circle>
           <circle class="bezier-anchor" id="p2" cx="192" cy="192" r="6"></circle>
@@ -71,7 +71,7 @@
 
     <section>
       <div>Gain</div>
-      <vertical-gauge value="20">
+      <vertical-gauge max="1">
         <div class="gauge-container">
           <div class="threshold-marker">
             <span class="threshold-label">50%</span>
@@ -81,8 +81,8 @@
     </section>
 
     <section>
-      Parameters
-      <!-- <times-control></times-control> -->
+      <times-control style="width: 100%; height: 300px" hmin="0" hmax="300000" vmin="1" vmax="100"
+        scan="10,500,10,200,#f0f" mask="10,500,10,300,#0ff" decay="10,500,10,400,#00f"></times-control>
     </section>
   </main>
 
