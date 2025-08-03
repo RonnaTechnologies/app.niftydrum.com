@@ -43,8 +43,6 @@ const updateSensorData = () => {
         return;
     }
 
-    console.log(data[currentSensor]);
-
     setDefaultMode();
     midiNote.value = data[currentSensor].note;
     bezierCurve.values = data[currentSensor]?.curve?.p;

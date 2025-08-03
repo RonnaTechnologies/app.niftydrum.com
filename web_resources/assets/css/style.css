@@ -87,12 +87,11 @@ vertical-gauge {
   background-color: var(--pico-form-element-background-color);
   border: var(--pico-border-width) solid var(--pico-form-element-border-color);
   border-radius: var(--radius-full);
-  overflow: hidden;
 }
 
 vertical-gauge .gauge-container {
   position: relative;
-  overflow: visible;
+  border-radius: var(--radius-full);
   height: 100%;
   background: linear-gradient(to top, var(--pico-form-element-border-color) 0%, transparent 0%);
 }
@@ -123,6 +122,7 @@ vertical-gauge .label {
   font-size: var(--font-size-sm);
   border-radius: var(--pico-border-radius);
   border: var(--pico-border-width) solid var(--pico-form-element-border-color);
+  background-color: var(--pico-form-element-background-color);
   white-space: nowrap;
   user-select: none;
   pointer-events: none;
