@@ -1,109 +1,75 @@
 class VerticalGauge extends HTMLElement {
-    static get observedAttributes() {
-        return ['max'];
-    }
-
     constructor() {
         super();
         this._value = 0;
-        this._threshold = 0;
+        this._marker = 0;
         this._max = parseFloat(this.getAttribute('max')) || 100;
         this.dragging = false;
 
         this.onPointerMove = this.onPointerMove.bind(this);
         this.onPointerUp = this.onPointerUp.bind(this);
+
+        this.debouncedDispatch = debounce(() => {
+            this.dispatchEvent(new CustomEvent('gain', {
+                detail: { threshold: this._marker },
+                bubbles: true,
+                composed: true
+            }));
+        });
     }
 
     connectedCallback() {
         this.container = this.querySelector('.gauge-container');
-        this.marker = this.querySelector('.threshold-marker');
-        this.thresholdLabel = this.marker?.querySelector('.threshold-label');
-        this.valueText = this.querySelector('.value-text');
+        this.marker = this.querySelector('.marker');
+        this.label = this.marker?.querySelector('.label');
 
         this.marker?.addEventListener('pointerdown', this.startDrag.bind(this));
 
-        this.updateGauge();
-        this.updateMarkerPosition();
-        this.updateValueText();
+        this.updateValue();
+        this.updateMarker();
 
-        if (this.thresholdLabel) {
-            this.thresholdLabel.style.opacity = '0';
-        }
-    }
-
-    attributeChangedCallback(name, oldValue, newValue) {
-        if (name === 'max') {
-            const newMax = parseFloat(newValue);
-            if (!isNaN(newMax) && newMax > 0) {
-                this._max = newMax;
-                this.value = this._value;
-                this.threshold = this._threshold;
-                this.updateGauge();
-                this.updateMarkerPosition();
-                this.updateValueText();
-            }
+        if (this.label) {
+            this.label.style.opacity = '0';
         }
     }
 
     set value(val) {
         this._value = this._clampToMax(val);
-        this.updateGauge();
-        this.updateValueText();
-    }
-
-    get value() {
-        return this._value;
+        this.updateValue();
     }
 
     set threshold(val) {
-        this._threshold = this._clampToMax(val);
-        this.updateMarkerPosition();
-        this.updateThresholdLabel();
+        this._marker = this._clampToMax(val);
+        this.updateMarker();
+        this.updatelabel();
     }
 
     get threshold() {
-        return this._threshold;
-    }
-
-    set max(val) {
-        const parsed = parseFloat(val);
-        if (!isNaN(parsed) && parsed > 0) {
-            this.setAttribute('max', parsed);
-        }
-    }
-
-    get max() {
-        return this._max;
+        return this._marker;
     }
 
     _clampToMax(val) {
         return Math.min(this._max, Math.max(0, val));
     }
 
-    updateGauge() {
+    updateValue() {
         const percent = (this._value / this._max) * 100;
         this.container.style.background = `linear-gradient(to top, orange ${percent}%, transparent ${percent}%)`;
     }
 
-    updateMarkerPosition() {
+    updateMarker() {
         const height = this.container.clientHeight;
         const markerHeight = this.marker?.offsetHeight || 0;
 
-        const ratio = 1 - (this._threshold / this._max);
+        const ratio = 1 - (this._marker / this._max);
         const translateY = ratio * (height - markerHeight);
 
         this.marker.style.transform = `translateY(${translateY}px)`;
     }
 
-    updateValueText() {
-        if (this.valueText) {
-            this.valueText.textContent = `${this._value.toFixed(2)} / ${this._max}`;
-        }
-    }
-
-    updateThresholdLabel() {
-        if (this.thresholdLabel) {
-            this.thresholdLabel.textContent = `${this._threshold.toFixed(2)}`;
+    updatelabel() {
+        if (this.label) {
+            this.label.textContent = `${this._marker.toFixed(2)}`;
         }
     }
 
@@ -111,8 +77,8 @@ class VerticalGauge extends HTMLElement {
         e.preventDefault();
         this.dragging = true;
 
-        if (this.thresholdLabel) {
-            this.thresholdLabel.style.opacity = '1';
+        if (this.label) {
+            this.label.style.opacity = '1';
         }
 
         window.addEventListener('pointermove', this.onPointerMove);
@@ -125,14 +91,18 @@ class VerticalGauge extends HTMLElement {
         const clampedY = Math.min(rect.height, Math.max(0, offsetY));
         const ratio = 1 - (clampedY / rect.height);
 
+        const oldThreshold = this.threshold;
         this.threshold = ratio * this._max;
+
+        if (oldThreshold === this.threshold) return;
+        this.debouncedDispatch()
     }
 
     onPointerUp() {
         this.dragging = false;
 
-        if (this.thresholdLabel) {
-            this.thresholdLabel.style.opacity = '0';
+        if (this.label) {
+            this.label.style.opacity = '0';
         }
 
         window.removeEventListener('pointermove', this.onPointerMove);

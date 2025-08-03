@@ -25,6 +25,14 @@ class BezierCurve extends HTMLElement {
 
     this._bindEvents();
     this._updateCurve();
+
+    this.debouncedDispatch = debounce(() => {
+      this.dispatchEvent(new CustomEvent('curve', {
+          detail: { curve: this.state },
+          bubbles: true,
+          composed: true
+      }));
+  });
   }
 
   _bindEvents() {
@@ -48,7 +56,6 @@ class BezierCurve extends HTMLElement {
 
     const svgPoint = pt.matrixTransform(this.svg.getScreenCTM().inverse());
 
-    // Flip Y coordinate to have 0 at bottom
     svgPoint.y = 255 - svgPoint.y;
 
     return svgPoint;
@@ -61,6 +68,8 @@ class BezierCurve extends HTMLElement {
     const clampedX = Math.max(0, Math.min(255, pos.x));
     const clampedY = Math.max(0, Math.min(255, pos.y));
 
+    const oldState = this.state;
+
     if (this.dragIndex === 0) {
       this.state[0][1] = clampedY;
     } else if (this.dragIndex === 3) {
@@ -71,6 +80,7 @@ class BezierCurve extends HTMLElement {
     }
 
     this._updateCurve();
+    this.debouncedDispatch();
   }
 
   _onMouseUp() {
@@ -80,7 +90,6 @@ class BezierCurve extends HTMLElement {
   }
 
   _updateCurve() {
-    // Flip Y when setting attributes so that 0 is bottom in SVG space
     this.path.setAttribute("d",
       `M ${this.state[0][0]},${255 - this.state[0][1]} ` +
       `C ${this.state[1][0]},${255 - this.state[1][1]} ` +
@@ -104,11 +113,11 @@ class BezierCurve extends HTMLElement {
     this.line23.setAttribute("y2", 255 - this.state[3][1]);
   }
 
-  getPoints() {
+  get values() {
     return this.state.map((point) => [...point]);
   }
 
-  setPoints(newPoints) {
+  set values(newPoints) {
     for (let i = 0; i < 4; i++) {
       if (i === 0) {
         this.state[0][0] = 0;
@@ -122,14 +131,6 @@ class BezierCurve extends HTMLElement {
       }
     }
     this._updateCurve();
-  }
-
-  get values() {
-    return this.getPoints();
-  }
-
-  set values(newPoints) {
-    this.setPoints(newPoints);
   }
 }
 

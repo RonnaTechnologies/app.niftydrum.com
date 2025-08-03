@@ -1,65 +1,69 @@
 const sensorsSelect = document.querySelector("#sensors-select");
+const defaultContainer = document.querySelector('#default-mode');
+const hhcContainer = document.querySelector('#hhc-mode');
 let currentSensor = sensorsSelect.value;
 let data = null;
 
 // Components
-const gain = document.querySelector('vertical-gauge');
 const bezierCurve = document.querySelector('bezier-curve');
+const gain = document.querySelector('vertical-gauge');
 const timeControl = document.querySelector('times-control');
+const midiNote = document.querySelector('#midi-note')
 
-async function fetchConfig()
-{
+const getConfig = async () => {
     const response = await fetch('/get_all');
     data = await response.json();
     updateSensorData();
 }
 
+getConfig();
+
+// Event handling
+gain.addEventListener('gain', () => {
+    fetch(`set/${currentSensor}/gain/${Math.floor(gain.threshold)}`)
+});
+
+bezierCurve.addEventListener('curve', (e) => {
+    fetch(`set/${currentSensor}/curve/${encodeURIComponent(JSON.stringify(e.detail.curve))}`)
+})
+
+sensorsSelect.addEventListener("change", (e) => {
+    currentSensor = e.target.value;
+    getConfig()
+    updateSensorData()
+})
+
+// Update sensor with current data
 const updateSensorData = () => {
     if (!data[currentSensor]) return null;
 
-    if (["hhc", "hhc_trig"].includes(currentSensor)) {
-        console.log("hcc instrument");
+    if (currentSensor === "hhc") {
+        setHhcMode();
+        // update hcc/hcc_trigg data
         return;
     }
-    console.log("default instrument");
-    
-    gain.threshold = fixedToFloat(data[currentSensor]?.gain, 8, 8);
+
+    console.log(data[currentSensor]);
+
+    setDefaultMode();
+    midiNote.value = data[currentSensor].note;
     bezierCurve.values = data[currentSensor]?.curve?.p;
+    gain.threshold = data[currentSensor].gain;
     timeControl.scan = data[currentSensor]?.scan;
     timeControl.mask = data[currentSensor]?.mask;
     timeControl.decay = data[currentSensor]?.decay;
     timeControl.threshold = data[currentSensor]?.threshold;
 }
 
-fetchConfig();
-
-sensorsSelect.addEventListener("change", (e) => {
-    currentSensor = e.target.value;
-    fetchConfig();
-})
-
-function fixedToFloat(rawValue, intBits, fracBits) {
-    // const totalBits = intBits + fracBits;
-    // const maxValue = Math.pow(2, totalBits);
-
-    // Ensure the raw value is within the valid range
-    // if (rawValue >= maxValue)
-    // {
-    //     throw new Error("Raw value out of range");
-    // }
-
-    // Calculate the integer part
-    const integerPart = rawValue >> fracBits;
-
-    // Calculate the fractional part
-    const fractionalPart = (rawValue & ((1 << fracBits) - 1)) / Math.pow(2, fracBits);
-
-    // Combine the integer and fractional parts
-    const floatValue = integerPart + fractionalPart;
-
-    return floatValue.toFixed(2);
+function setDefaultMode() {
+    defaultContainer.toggleAttribute('disabled', false);
+    hhcContainer.toggleAttribute('disabled', true);
 }
 
+function setHhcMode() {
+    defaultContainer.toggleAttribute('disabled', true);
+    hhcContainer.toggleAttribute('disabled', false);
+}
 
 // let data = {}
 

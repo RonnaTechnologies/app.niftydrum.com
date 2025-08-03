@@ -12,7 +12,7 @@
   <link rel="stylesheet" href="/assets/css/pico.pumpkin.min.css">
   <link rel="stylesheet" href="/assets/css/style.css">
 
-  <script src="/assets/js/konva.min.js" defer></script>
+  <script src="/assets/js/utils.js" defer></script>
   <script src="/assets/js/bezier-curves.js" defer></script>
   <script src="/assets/js/vertical-gauge.js" defer></script>
   <script src="/assets/js/times-control.js" defer></script>
@@ -34,8 +34,7 @@
     </button>
 
     <select name="sensors" id="sensors-select">
-      <option value="hihat" selected>Hi-hat</option>
-      <option value="kick">Kick</option>
+      <option value="kick" selected>Kick</option>
       <option value="snare">Snare</option>
       <option value="ride">Ride</option>
       <option value="crash1">Crash 1</option>
@@ -43,8 +42,8 @@
       <option value="tom1">Tom 1</option>
       <option value="tom2">Tom 2</option>
       <option value="tom3">Tom 3</option>
-      <option value="hhc">Hi-hat</option>
-      <option value="hhc_trig">Hi-hat Controller</option>
+      <option value="hihat">Hi-hat</option>
+      <option value="hhc">Hi-hat Controller</option>
     </select>
 
     <button class="secondary" onclick="confirm('All presets will be reset to last configuration')">Reset</button>
@@ -52,38 +51,48 @@
   </header>
 
   <main>
-    <section>
-      Velocity curve
-      <bezier-curve>
-        <svg id="bezier-svg" viewBox="0 -10 256 276" width="256" height="256">
-          <line id="line-p0-p1" class="control-line" x1="0" y1="128" x2="64" y2="64"></line>
-          <line id="line-p2-p3" class="control-line" x1="192" y1="192" x2="255" y2="128"></line>
+    <div id="default-mode">
+      <section>
+        Note
+        <input type="number" name="midi-note" min="0" max="256" id="midi-note" value="0">
 
-          <path id="bezier-curve-path" d="M 0,128 C 64,64 192,192 255,128" />
 
-          <circle class="bezier-anchor" id="p0" cx="0" cy="128" r="6"></circle>
-          <circle class="bezier-anchor" id="p1" cx="64" cy="64" r="6"></circle>
-          <circle class="bezier-anchor" id="p2" cx="192" cy="192" r="6"></circle>
-          <circle class="bezier-anchor" id="p3" cx="255" cy="128" r="6"></circle>
-        </svg>
-      </bezier-curve>
-    </section>
-
-    <section>
-      <div>Gain</div>
-      <vertical-gauge max="1">
-        <div class="gauge-container">
-          <div class="threshold-marker">
-            <span class="threshold-label">50%</span>
+        Velocity curve
+        <bezier-curve>
+          <svg id="bezier-svg" viewBox="0 -10 256 276" width="256" height="256">
+            <line id="line-p0-p1" class="control-line" x1="0" y1="128" x2="64" y2="64"></line>
+            <line id="line-p2-p3" class="control-line" x1="192" y1="192" x2="255" y2="128"></line>
+  
+            <path id="bezier-curve-path" d="M 0,128 C 64,64 192,192 255,128" />
+  
+            <circle class="bezier-anchor" id="p0" cx="0" cy="128" r="6"></circle>
+            <circle class="bezier-anchor" id="p1" cx="64" cy="64" r="6"></circle>
+            <circle class="bezier-anchor" id="p2" cx="192" cy="192" r="6"></circle>
+            <circle class="bezier-anchor" id="p3" cx="255" cy="128" r="6"></circle>
+          </svg>
+        </bezier-curve>
+      </section>
+  
+      <section>
+        Gain
+        <vertical-gauge max="100">
+          <div class="gauge-container">
+            <div class="marker">
+              <span class="label">0%</span>
+            </div>
           </div>
-        </div>
-      </vertical-gauge>
-    </section>
-
-    <section>
-      <times-control style="width: 100%; height: 300px" hmin="0" hmax="300000" vmin="1" vmax="100"
-        scan="10,500,10,200,#f0f" mask="10,500,10,300,#0ff" decay="10,500,10,400,#00f"></times-control>
-    </section>
+        </vertical-gauge>
+      </section>
+  
+      <section style="flex-grow: 1">
+        Times controls
+        <times-control hmin="0" hmax="2000" vmin="1" vmax="1000"
+          scan="10,500,10,200,#f0f" mask="10,500,10,300,#0ff" decay="10,500,10,400,#00f"></times-control>
+      </section>
+    </div>
+    <div id="hhc-mode" disabled>
+      hhc mode
+    </div>
   </main>
 
   <dialog id="about-modal">

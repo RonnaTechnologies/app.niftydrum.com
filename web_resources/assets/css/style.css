@@ -1,16 +1,7 @@
 :root {
-  --size-section-height: 292px;
   --size-control-width: 30px;
   --radius-full: 999px;
-  --radius-default: var(--pico-border-radius);
   --padding-default: 1rem;
-
-  /* Colors */
-  --color-neutral-100: #f8f8f8;
-  --color-neutral-200: #ddd;
-  --color-neutral-300: #ccc;
-  --color-neutral-700: #666;
-  --color-accent-500: orange;
 
   /* Typography */
   --font-family-base: sans-serif;
@@ -32,11 +23,14 @@
 * {
   scroll-margin-block-start: 0.75em;
   box-sizing: border-box;
+  margin-block-end: 0 !important;
 }
 
 html {
   padding: 0;
   margin: 0;
+  color: var(--pico-color);
+  background-color: var(--pico-background-color);
 }
 
 body {
@@ -55,136 +49,127 @@ html[data-theme="dark"] nav img {
   }
 }
 
+[disabled] {
+  display: none !important;
+}
+
 header {
   display: flex;
   gap: 1rem;
 }
 
-header * {
-  margin-block-end: 0 !important;
-}
-
-main {
+div[id$="-mode"] {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
 }
 
-main > * {
-  border-radius: var(--radius-default);
-  background-color: var(--color-neutral-100);
-  padding: var(--padding-default);
-  margin-block-end: 0;
-}
-
-main > *:nth-child(2) {
+section {
   display: flex;
   flex-direction: column;
-  align-items: center;
-}
-
-main > *:last-child {
-  flex-grow: 1;
 }
 
 bezier-curve {
-  display: block;
+  display: grid;
+  align-items: center;
   width: 100%;
-  max-width: 400px;
-  margin: 0 auto;
-}
-
-times-control {
-  display: block;
-  width: 100%;
-  height: var(--size-section-height);
-  position: relative;
-}
-
-times-control canvas {
-  display: block;
-  border-radius: var(--radius-default);
+  height: 100%;
+  background-color: var(--pico-form-element-background-color);
+  border: var(--pico-border-width) solid var(--pico-form-element-border-color);
+  border-radius: var(--pico-border-radius);
 }
 
 vertical-gauge {
+  z-index: 2;
   position: relative;
   width: var(--size-control-width);
-  height: var(--size-section-height);
+  height: 100%;
+  background-color: var(--pico-form-element-background-color);
+  border: var(--pico-border-width) solid var(--pico-form-element-border-color);
+  border-radius: var(--radius-full);
+  overflow: hidden;
 }
 
 vertical-gauge .gauge-container {
-  height: 100%;
-  border-radius: var(--radius-full);
-  border: 2px solid var(--color-neutral-300);
-  background: linear-gradient(to top, var(--color-accent-500) 0%, transparent 0%);
-  overflow: visible;
   position: relative;
+  overflow: visible;
+  height: 100%;
+  background: linear-gradient(to top, var(--pico-form-element-border-color) 0%, transparent 0%);
 }
 
-vertical-gauge .threshold-marker {
+vertical-gauge .marker {
   position: absolute;
   left: 0;
   width: 100%;
   aspect-ratio: 1 / 1;
-  background: var(--color-neutral-200);
-  border: 2px solid var(--color-neutral-700);
+  background: var(--pico-switch-background-color);
+  border: var(--pico-border-width) solid var(--pico-secondary);
   border-radius: 50%;
   cursor: var(--cursor-default);
   transform: translateY(0);
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: border-width var(--transition-default);
+  transition: background-color var(--transition-default);
 }
 
-vertical-gauge .threshold-marker:hover {
-  border-width: 4px;
+vertical-gauge .marker:hover {
+  background-color: var(--pico-primary-background);
 }
 
-vertical-gauge .threshold-label {
+vertical-gauge .label {
   position: absolute;
-  left: var(--size-control-width);
-  top: 50%;
-  transform: translateY(-50%);
   padding: 0.5rem;
-  border-radius: var(--radius-default);
-  background-color: #fff;
   font-size: var(--font-size-sm);
-  border: 2px solid var(--color-neutral-300);
+  border-radius: var(--pico-border-radius);
+  border: var(--pico-border-width) solid var(--pico-form-element-border-color);
   white-space: nowrap;
   user-select: none;
   pointer-events: none;
+  left: var(--size-control-width);
+  top: 50%;
+  transform: translateY(-50%);
   opacity: 0;
   transition: opacity var(--transition-default);
 }
 
 svg {
   width: 100%;
-  height: 100%;
-  background-color: var(--color-neutral-100);
 }
 
 .bezier-anchor {
-  fill: var(--color-neutral-200);
-  stroke: var(--color-neutral-700);
+  fill: var(--pico-switch-background-color);
+  stroke: var(--pico-secondary);
   stroke-width: 1;
   cursor: pointer;
   r: 8;
-  transition: fill 0.2s;
+  transition: fill var(--transition-default);
 }
 
 .bezier-anchor:hover {
-  fill: var(--color-accent-500);
+  fill: var(--pico-primary-background);
 }
 
 path {
   fill: none;
-  stroke: var(--color-neutral-700);
+  stroke: var(--pico-secondary);
   stroke-width: var(--stroke-width-primary);
 }
 
 .control-line {
-  stroke: var(--color-neutral-700);
+  stroke: var(--pico-secondary);
   stroke-width: var(--stroke-width-secondary);
   stroke-dasharray: var(--stroke-dash-pattern);
+}
+
+times-control {
+  display: block;
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+times-control canvas {
+  display: block;
+  border-radius: var(--pico-border-radius);
 }
