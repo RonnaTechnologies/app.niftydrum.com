@@ -1,9 +1,10 @@
-class VerticalGauge extends HTMLElement {
+class RangeSlider extends HTMLElement {
     constructor() {
         super();
         this._value = 0;
-        this._marker = 0;
-        this._max = parseFloat(this.getAttribute('max')) || 100;
+        this._max = parseFloat(this.getAttribute('max')) || 1;
+        this._min = parseFloat(this.getAttribute('min')) || 0;
+        this._marker = this._min || 0;
         this.dragging = false;
 
         this.onPointerMove = this.onPointerMove.bind(this);
@@ -19,7 +20,7 @@ class VerticalGauge extends HTMLElement {
     }
 
     connectedCallback() {
-        this.container = this.querySelector('.gauge-container');
+        this.container = this.querySelector('.slider-container');
         this.marker = this.querySelector('.marker');
         this.label = this.marker?.querySelector('.label');
 
@@ -27,10 +28,6 @@ class VerticalGauge extends HTMLElement {
 
         this.updateValue();
         this.updateMarker();
-
-        if (this.label) {
-            this.label.style.opacity = '0';
-        }
     }
 
     set value(val) {
@@ -53,33 +50,34 @@ class VerticalGauge extends HTMLElement {
     }
 
     updateValue() {
-        const percent = (this._value / this._max) * 100;
+        const range = this._max - this._min;
+        const normalizedValue = (this._value - this._min) / range;
+        const percent = normalizedValue * 100;
+    
         this.container.style.background = `linear-gradient(to top, orange ${percent}%, transparent ${percent}%)`;
     }
 
     updateMarker() {
         const height = this.container.clientHeight;
         const markerHeight = this.marker?.offsetHeight || 0;
-
-        const ratio = 1 - (this._marker / this._max);
+    
+        const range = this._max - this._min;
+        const normalizedMarker = (this._marker - this._min) / range;
+        const ratio = 1 - normalizedMarker;
         const translateY = ratio * (height - markerHeight);
-
+    
         this.marker.style.transform = `translateY(${translateY}px)`;
-    }
+    }    
 
     updatelabel() {
         if (this.label) {
-            this.label.textContent = `${this._marker.toFixed(2)}`;
+            this.label.textContent = Number(this._marker.toFixed(2)).toString();
         }
     }
 
     startDrag(e) {
         e.preventDefault();
         this.dragging = true;
-
-        if (this.label) {
-            this.label.style.opacity = '1';
-        }
 
         window.addEventListener('pointermove', this.onPointerMove);
         window.addEventListener('pointerup', this.onPointerUp);
@@ -92,7 +90,7 @@ class VerticalGauge extends HTMLElement {
         const ratio = 1 - (clampedY / rect.height);
 
         const oldThreshold = this.threshold;
-        this.threshold = ratio * this._max;
+        this.threshold = this._min + ( ratio * (this._max - this._min));
 
         if (oldThreshold === this.threshold) return;
         this.debouncedDispatch()
@@ -101,13 +99,9 @@ class VerticalGauge extends HTMLElement {
     onPointerUp() {
         this.dragging = false;
 
-        if (this.label) {
-            this.label.style.opacity = '0';
-        }
-
         window.removeEventListener('pointermove', this.onPointerMove);
         window.removeEventListener('pointerup', this.onPointerUp);
     }
 }
 
-customElements.define('vertical-gauge', VerticalGauge);
+customElements.define('range-slider', RangeSlider);

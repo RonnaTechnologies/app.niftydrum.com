@@ -118,9 +118,12 @@ class BezierCurve extends HTMLElement {
   }
 
   set values(newPoints) {
+    if (!newPoints) return null;
+
     for (let i = 0; i < 4; i++) {
       if (i === 0) {
         this.state[0][0] = 0;
+        
         this.state[0][1] = Math.max(0, Math.min(255, newPoints[0][1]));
       } else if (i === 3) {
         this.state[3][0] = 255;

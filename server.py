@@ -25,8 +25,8 @@ config = {
         "decay": 120,
         "threshold": 10,
         "note": 36,
-        "gain": 10,
-        "curve": {"p": [[0, 0], [192, 192], [128, 64], [256, 256]]}
+        "gain": 1.1,
+        "curve": {"p": [[0, 10], [192, 192], [128, 64], [256, 256]]}
     },
     "snare": {
         "scan": 200,
@@ -34,7 +34,7 @@ config = {
         "decay": 220,
         "threshold": 20,
         "note": 38,
-        "gain": 20,
+        "gain": 1.2,
         "curve": {"p": [[0, 10], [192, 192], [128, 64], [256, 256]]}
     },
     "hihat": {
@@ -43,7 +43,7 @@ config = {
         "decay": 130000,
         "threshold": 50,
         "note": 42,
-        "gain": 30,
+        "gain": 1.3,
         "curve": {"p": [[0, 20], [192, 192], [128, 64], [256, 256]]}
     },
     "crash1": {
@@ -52,7 +52,7 @@ config = {
         "decay": 130000,
         "threshold": 50,
         "note": 49,
-        "gain": 40,
+        "gain": 1.4,
         "curve": {"p": [[0, 30], [192, 192], [128, 64], [256, 256]]}
     },
     "tom1": {
@@ -61,7 +61,7 @@ config = {
         "decay": 130000,
         "threshold": 50,
         "note": 50,
-        "gain": 50,
+        "gain": 1.5,
         "curve": {"p": [[0, 40], [192, 192], [128, 64], [256, 256]]}
     },
     "tom3": {
@@ -70,7 +70,7 @@ config = {
         "decay": 130000,
         "threshold": 50,
         "note": 41,
-        "gain": 60,
+        "gain": 1.6,
         "curve": {"p": [[0, 50], [192, 192], [128, 64], [256, 256]]}
     },
     "ride": {
@@ -79,7 +79,7 @@ config = {
         "decay": 130000,
         "threshold": 50,
         "note": 51,
-        "gain": 70,
+        "gain": 1.7,
         "curve": {"p": [[0, 60], [192, 192], [128, 64], [256, 256]]}
     },
     "tom2": {
@@ -88,7 +88,7 @@ config = {
         "decay": 130000,
         "threshold": 1800,
         "note": 47,
-        "gain": 80,
+        "gain": 1.8,
         "curve": {"p": [[0, 70], [192, 192], [128, 64], [256, 256]]}
     },
     "crash2": {
@@ -97,18 +97,21 @@ config = {
         "decay": 130000,
         "threshold": 1800,
         "note": 57,
-        "gain": 90,
+        "gain": 1.9,
         "curve": {"p": [[0, 80], [192, 192], [128, 64], [256, 256]]}
     },
     "hhc": {
-        "timeout": 9000,
+        # "timeout": 9000, ??
+        "interval": 10,
         "threshold": 30,
-        "offset": 105
+        "gain": 2.5,
+        "offset": 105,
+        "trig": 800
     },
     "hhc_trig": {
         "threshold": 400,
         "scan": 15000,
-        "vel_thresh": 800
+        "velThresh": 800
     }
 }
 
@@ -213,8 +216,8 @@ def get_firmware():
 def set_sensor_param(sensor, param, value):
     if sensor in config and param in config[sensor]:
         # Convert value to the appropriate type
-        if isinstance(config[sensor][param], int):
-            config[sensor][param] = int(value)
+        if isinstance(config[sensor][param], float):
+            config[sensor][param] = float(value)
         elif isinstance(config[sensor][param], list):
             config[sensor][param] = json.loads(value)
         else:
