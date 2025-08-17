@@ -62,7 +62,7 @@ header {
 div[id$="-mode"] {
   display: flex;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: 2rem;
 }
 
 section {
@@ -83,7 +83,7 @@ range-slider {
 range-slider:before, range-slider:after {
   position: absolute;
   font-size: var(--font-size-sm);
-  left: calc(var(--size-control-width) + 0.25rem);
+  left: calc(var(--size-control-width));
   width: max-content;
   white-space: nowrap;
   user-select: none;
@@ -92,24 +92,24 @@ range-slider:before, range-slider:after {
 
 range-slider:before {
   content: "- " attr(min);
-  bottom: 0.25rem;
+  bottom: calc(var(--size-control-width) / 2 - 1px);
+  transform: translateY(50%);
 }
 
 range-slider:after {
   content: "- " attr(max);
-  top: 0.25rem;
+  top: calc(var(--size-control-width) / 2 - 1px);
+  transform: translateY(-50%);
 }
 
 range-slider .slider-container {
-  position: relative;
-  border-radius: var(--radius-full);
   height: 100%;
+  border-radius: var(--radius-full);
   background: linear-gradient(to top, var(--pico-form-element-border-color) 0%, transparent 0%);
 }
 
 range-slider .marker {
   position: absolute;
-  left: 0;
   width: 100%;
   aspect-ratio: 1 / 1;
   background: var(--pico-switch-background-color);
@@ -131,15 +131,13 @@ range-slider .marker:hover {
 range-slider .label {
   position: absolute;
   font-size: var(--font-size-sm);
+  background-color: var(--pico-background-color);
   white-space: nowrap;
   user-select: none;
   pointer-events: none;
-  left: var(--size-control-width);
   top: 50%;
+  left: calc(var(--size-control-width) - 1px);
   transform: translateY(-50%);
-  background-color: var(--pico-background-color);
-  padding: 0.2rem;
-  opacity: 1;
 }
 
 range-slider .label:before {
