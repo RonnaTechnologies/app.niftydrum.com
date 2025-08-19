@@ -194,6 +194,11 @@ time-bar-chart {
   border-radius: var(--pico-border-radius);
 }
 
+time-bar-chart #timeline {
+  display: block;
+  width: 100%;
+}
+
 time-bar-chart .resize-handle {
   fill: transparent;
   pointer-events: all;

@@ -2,7 +2,7 @@ class TimeBarChart extends HTMLElement {
   constructor() {
     super();
     this.svg = null;
-    this.svgWidth = 800;
+    this.svgWidth = 800; // TODO: make it take the full component width
     this.svgHeight = 300;
     this.bars = [];
     this.timeComponent = {};
