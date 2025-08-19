@@ -21,6 +21,8 @@ class TimeBarChart extends HTMLElement {
   connectedCallback() {
     this.svg = document.getElementById("timeline");
     this.setSvgWidth(this.svgWidth);
+    window.addEventListener('resize', this.setSvgWidth(this.svgWidth));
+
     this.thresholdLine = document.getElementById("threshold-line");
     this.thresholdInput = document.querySelector('input[name="threshold"]');
 
