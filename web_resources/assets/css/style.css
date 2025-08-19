@@ -117,7 +117,7 @@ range-slider .marker {
   width: 100%;
   aspect-ratio: 1 / 1;
   background: var(--pico-switch-background-color);
-  border: var(--border);
+  border: var(--pico-border-width) solid var(--pico-secondary);
   border-radius: 50%;
   cursor: var(--cursor-default);
   transform: translateY(0);
@@ -167,7 +167,6 @@ bezier-curve .bezier-anchor {
   stroke: var(--pico-secondary);
   stroke-width: 1;
   cursor: pointer;
-  r: 8;
   transition: fill var(--transition-default);
 }
 
@@ -194,13 +193,18 @@ time-bar-chart {
   border-radius: var(--pico-border-radius);
 }
 
+time-bar-chart svg text {
+  user-select: none;
+  pointer-events: none;
+}
+
 time-bar-chart #timeline {
   display: block;
   width: 100%;
 }
 
 time-bar-chart .resize-handle {
-  fill: transparent;
+  fill: var(--pico-secondary);
   pointer-events: all;
   cursor: ew-resize;
 }
@@ -211,12 +215,16 @@ time-bar-chart .resize-handle:hover {
 
 time-bar-chart #threshold-line {
   cursor: ns-resize;
-  stroke: var(--pico-primary-background);
+  stroke: var(--pico-secondary);
   stroke-width: 5;
 }
 
+time-bar-chart #threshold-line:hover {
+  stroke: var(--pico-primary-background);
+}
+
 time-bar-chart .parameters {
-  padding: 0.25rem;
+  padding: 0.5rem;
 }
 
 dialog:has(footer) article {

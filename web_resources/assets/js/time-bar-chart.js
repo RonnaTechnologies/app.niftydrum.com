@@ -2,7 +2,7 @@ class TimeBarChart extends HTMLElement {
   constructor() {
     super();
     this.svg = null;
-    this.svgWidth = 800; // TODO: make it take the full component width
+    this.svgWidth = this.clientWidth;
     this.svgHeight = 300;
     this.bars = [];
     this.timeComponent = {};
@@ -15,11 +15,12 @@ class TimeBarChart extends HTMLElement {
     this.thresholdInput = null;
     this.isDraggingThreshold = false;
     this.startY = 0;
-    this.originalY = 210;
+    this.thresholdInitValue = 200;
   }
 
   connectedCallback() {
     this.svg = document.getElementById("timeline");
+    this.setSvgWidth(this.svgWidth);
     this.thresholdLine = document.getElementById("threshold-line");
     this.thresholdInput = document.querySelector('input[name="threshold"]');
 
@@ -27,13 +28,12 @@ class TimeBarChart extends HTMLElement {
 
     this.bars = groups.map((group) => {
       const name = group.dataset.name;
+      const input = document.querySelector(`input[name="${name}"]`);
       const rect = group.querySelector("rect.bar");
       const handle = group.querySelector(".resize-handle");
       const text = group.querySelector("text");
-      const minWidth = parseFloat(group.dataset.minWidth) || 30;
-      const maxWidth = parseFloat(group.dataset.maxWidth) || this.svgWidth;
-
-      const input = document.querySelector(`input[name="${name}"]`);
+      const minWidth = input.min || 0;
+      const maxWidth = input.max || this.svgWidth;
 
       const bar = {
         name,
@@ -67,13 +67,9 @@ class TimeBarChart extends HTMLElement {
         }
       };
 
-      // Sync input min/max/value
       if (bar.input) {
-        bar.input.min = bar.minWidth;
-        bar.input.max = bar.maxWidth;
         bar.input.value = bar.getWidth().toFixed(1);
 
-        // When user types in input, update bar
         bar.input.addEventListener("input", (e) => {
           const val = parseFloat(e.target.value);
           if (!isNaN(val)) {
@@ -130,6 +126,13 @@ class TimeBarChart extends HTMLElement {
     });
   }
 
+  setSvgWidth(newWidth) {
+    this.svg.setAttribute('width', this.svgWidth);
+    const viewBoxValues = this.svg.getAttribute('viewBox').split(' ').map(Number);
+    viewBoxValues[2] = newWidth;
+    this.svg.setAttribute('viewBox', viewBoxValues.join(' '));
+  }
+
   setupEvents() {
     this.svg.addEventListener("mousedown", (e) => {
       if (e.target.classList.contains("resize-handle")) {
@@ -145,7 +148,7 @@ class TimeBarChart extends HTMLElement {
     this.thresholdLine.addEventListener("mousedown", (e) => {
       this.isDraggingThreshold = true;
       this.startY = e.clientY;
-      this.originalY = parseFloat(this.thresholdLine.getAttribute("y1"));
+      this.thresholdInitValue = parseFloat(this.thresholdLine.getAttribute("y1"));
       e.preventDefault();
     });
 
@@ -155,7 +158,7 @@ class TimeBarChart extends HTMLElement {
         this.bars[this.targetIndex].setWidth(this.originalWidth + dx);
       } else if (this.isDraggingThreshold) {
         const dy = e.clientY - this.startY;
-        let newY = this.originalY + dy;
+        let newY = this.thresholdInitValue + dy;
         newY = Math.min(this.svgHeight, Math.max(0, newY));
         this.thresholdLine.setAttribute("y1", newY);
         this.thresholdLine.setAttribute("y2", newY);
