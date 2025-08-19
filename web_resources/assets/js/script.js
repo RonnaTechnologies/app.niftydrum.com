@@ -11,7 +11,7 @@ let data = null;
 const midiNote = document.querySelector('#midi-note');
 const bezierCurve = document.querySelector('bezier-curve');
 const gain = document.querySelector('range-slider[name="gain"]');
-const parameters = document.querySelector('time-control');
+const parameters = document.querySelector('time-bar-chart');
 
 // HHC settings elements
 const hhcInterval = document.querySelector('range-slider[name="hhc-interval"]');
