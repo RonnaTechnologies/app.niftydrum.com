@@ -87,7 +87,7 @@ range-slider {
 range-slider:before, range-slider:after {
   position: absolute;
   font-size: var(--font-size-sm);
-  left: calc(var(--size-control-width));
+  left: calc(var(--size-control-width) + 2px);
   width: max-content;
   white-space: nowrap;
   user-select: none;
@@ -95,13 +95,13 @@ range-slider:before, range-slider:after {
 }
 
 range-slider:before {
-  content: "- " attr(min);
+  content: attr(min);
   bottom: calc(var(--size-control-width) / 2 - 1px);
   transform: translateY(50%);
 }
 
 range-slider:after {
-  content: "- " attr(max);
+  content: attr(max);
   top: calc(var(--size-control-width) / 2 - 1px);
   transform: translateY(-50%);
 }
@@ -140,12 +140,8 @@ range-slider .label {
   user-select: none;
   pointer-events: none;
   top: 50%;
-  left: calc(var(--size-control-width) - 1px);
+  left: calc(var(--size-control-width) + 1px);
   transform: translateY(-50%);
-}
-
-range-slider .label:before {
-  content: "- ";
 }
 
 bezier-curve {

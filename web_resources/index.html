@@ -87,15 +87,9 @@
         Parameters
         <time-bar-chart>
           <svg id="timeline" viewBox="0 0 800 300" width="800" height="300">
-            <g data-name="start">
-              <text y="15" opacity="0" font-size="12"></text>
-              <rect class="bar" x="0" y="0" width="80" height="300" opacity="0" />
-              <rect class="resize-handle" x="75" y="0" width="10" height="300" />
-            </g>
-        
             <g data-name="scan">
               <rect class="bar" x="0" y="0" width="80" height="300" fill="#d0eaff" />
-              <text x="5" y="20" font-size="14" fill="#003366">Scan</text>
+              <text x="0" y="20" font-size="14" fill="#003366">Scan</text>
               <rect class="resize-handle" x="75" y="0" width="10" height="300" />
             </g>
         
@@ -114,10 +108,6 @@
             <line id="threshold-line" x1="0" x2="100%" y1="210" y2="210" />
           </svg>
           <div class="grid parameters">
-            <label>
-              Start-time (ms)
-              <input type="number" name="start" id="scan-time" min="30" max="200">
-            </label>
             <label>
               Scan-time (ms)
               <input type="number" name="scan" id="scan-time" min="40" max="200">
@@ -185,8 +175,23 @@
       </section>
 
       <section>
-        Scan time component
-        <hhc-trig>...</hhc-trig>
+        Scan time & threshold
+        <div class="grid">
+          <range-slider min="0" max="64" name="hhc-scan">
+            <div class="slider-container">
+              <div class="marker">
+                <span class="label"></span>
+              </div>
+            </div>
+          </range-slider>
+          <range-slider min="0" max="64" name="hhc-scan-threshold">
+            <div class="slider-container">
+              <div class="marker">
+                <span class="label"></span>
+              </div>
+            </div>
+          </range-slider>
+        </div>
       </section>
 
       <section>
