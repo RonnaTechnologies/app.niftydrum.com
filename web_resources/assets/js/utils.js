@@ -1,10 +1,40 @@
-function debounce(func, delay=200) {
+function debounce(func, delay = 200) {
     let timeout;
     return function (...args) {
         clearTimeout(timeout);
         timeout = setTimeout(() => func.apply(this, args), delay);
     };
 }
+
+// function extractWidthsFromApiData(data, currentSensor) {
+//     const scan = data[currentSensor]?.scan || 0;
+//     const mask = data[currentSensor]?.mask || 0;
+//     const decay = data[currentSensor]?.decay || 0;
+
+//     const times = [scan, mask, decay];
+
+//     const widths = times.map((time, i) => {
+//         const prev = i === 0 ? 0 : times[i - 1];
+//         return time - prev;
+//     });
+
+//     return {
+//         scan: widths[0],
+//         mask: widths[1],
+//         decay: widths[2],
+//         threshold: data[currentSensor]?.threshold || 0
+//     };
+// }
+
+// function composeApiDataFromWidths(customElement) {
+//     const scan = customElement.scan || 0;
+//     const mask = (customElement.scan || 0) + (customElement.mask || 0);
+//     const decay = mask + (customElement.decay || 0);
+//     const threshold = customElement.threshold || 0;
+
+//     return { scan, mask, decay, threshold };
+// }
+
 
 function fixedToFloat(rawValue, intBits, fracBits) {
     // const totalBits = intBits + fracBits;

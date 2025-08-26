@@ -85,40 +85,40 @@
 
       <section style="flex:1">
         Parameters
-        <time-bar-chart>
-          <svg id="timeline" viewBox="0 0 800 300" width="800" height="300">
+        <time-bar-chart maxDuration="600">
+          <svg id="timeline"
+              viewBox="0 0 600 300"
+              preserveAspectRatio="none">
             <g data-name="scan">
               <rect class="bar" x="0" y="0" width="80" height="300" fill="#d0eaff" />
-              <text x="0" y="20" font-size="14" fill="#003366">Scan</text>
               <rect class="resize-handle" x="75" y="0" width="10" height="300" />
             </g>
         
             <g data-name="mask">
               <rect class="bar" x="0" y="0" width="100" height="300" fill="#ffe0e0" />
-              <text x="5" y="20" font-size="14" fill="#660000">Mask</text>
               <rect class="resize-handle" x="95" y="0" width="10" height="300" />
             </g>
         
             <g data-name="decay">
               <rect class="bar" x="0" y="0" width="160" height="300" fill="#e0ffe0" />
-              <text x="5" y="20" font-size="14" fill="#004400">Decay</text>
               <rect class="resize-handle" x="155" y="0" width="5" height="300" />
             </g>
         
             <line id="threshold-line" x1="0" x2="100%" y1="210" y2="210" />
           </svg>
+
           <div class="grid parameters">
             <label>
-              Scan-time (ms)
+              Scan (ms)
               <input type="number" name="scan" id="scan-time" min="40" max="200">
             </label>
             <label>
-              Mask-time (ms)
-              <input type="number" name="mask" id="mask-time" min="50" max="300" >
+              Mask (ms)
+              <input type="number" name="mask" id="mask-time" min="50" max="200" >
             </label>
             <label>
               Decay (ms)
-              <input type="number" name="decay" id="decay" min="80" max="400">
+              <input type="number" name="decay" id="decay" min="80" max="200">
             </label>
             <label>
               Threshold (%)
@@ -152,7 +152,7 @@
         </range-slider>
       </section>
 
-      <section>
+      <!-- <section>
         Gain
         <range-slider min="0.1" max="5" name="hhc-gain">
           <div class="slider-container">
@@ -161,7 +161,7 @@
             </div>
           </div>
         </range-slider>
-      </section>
+      </section> -->
 
       <section>
         Offset
@@ -258,5 +258,4 @@
   </dialog>
 
 </body>
-
 </html>

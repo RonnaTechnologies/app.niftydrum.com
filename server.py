@@ -29,9 +29,9 @@ config = {
         "curve": {"p": [[0, 10], [192, 192], [128, 64], [256, 256]]}
     },
     "snare": {
-        "scan": 200,
-        "mask": 210,
-        "decay": 220,
+        "scan": 120,
+        "mask": 120,
+        "decay": 120,
         "threshold": 20,
         "note": 38,
         "gain": 1.2,

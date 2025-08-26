@@ -1,6 +1,7 @@
 class RangeSlider extends HTMLElement {
     constructor() {
         super();
+        this._name = this.getAttribute('name');
         this._value = 0;
         this._max = parseFloat(this.getAttribute('max')) || 1;
         this._min = parseFloat(this.getAttribute('min')) || 0;
@@ -11,7 +12,7 @@ class RangeSlider extends HTMLElement {
         this.onPointerUp = this.onPointerUp.bind(this);
 
         this.debouncedDispatch = debounce(() => {
-            this.dispatchEvent(new CustomEvent('gain', {
+            this.dispatchEvent(new CustomEvent(this._name, {
                 detail: { threshold: this._marker },
                 bubbles: true,
                 composed: true
@@ -28,6 +29,14 @@ class RangeSlider extends HTMLElement {
 
         this.updateValue();
         this.updateMarker();
+        this.resizeObserver = new ResizeObserver(() => {
+            this.updateMarker();
+        });
+        this.resizeObserver.observe(this.container);
+    }
+
+    disconnectedCallback() {
+        this.resizeObserver?.disconnect();
     }
 
     set value(val) {
