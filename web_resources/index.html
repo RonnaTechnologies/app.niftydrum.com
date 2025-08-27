@@ -109,19 +109,19 @@
 
           <div class="grid parameters">
             <label>
-              Scan (ms)
+              <small>Scan (ms)</small>
               <input type="number" name="scan" id="scan-time" min="40" max="200">
             </label>
             <label>
-              Mask (ms)
+              <small>Mask (ms)</small>
               <input type="number" name="mask" id="mask-time" min="50" max="200" >
             </label>
             <label>
-              Decay (ms)
+              <small>Decay (ms)</small>
               <input type="number" name="decay" id="decay" min="80" max="200">
             </label>
             <label>
-              Threshold (%)
+              <small>Threshold (%)</small>
               <input type="number" name="threshold" id="threshold-line" min="0" max="100">
             </label>
           </div>
@@ -175,6 +175,17 @@
       </section>
 
       <section>
+        Trig
+        <range-slider min="200" max="2000" name="hhc-trig">
+          <div class="slider-container">
+            <div class="marker">
+              <span class="label"></span>
+            </div>
+          </div>
+        </range-slider>
+      </section>
+
+      <!-- <section>
         Scan time & threshold
         <div class="grid">
           <range-slider min="0" max="64" name="hhc-scan">
@@ -192,18 +203,7 @@
             </div>
           </range-slider>
         </div>
-      </section>
-
-      <section>
-        Trig
-        <range-slider min="200" max="2000" name="hhc-trig">
-          <div class="slider-container">
-            <div class="marker">
-              <span class="label"></span>
-            </div>
-          </div>
-        </range-slider>
-      </section>
+      </section> -->
     </div>
   </main>
 

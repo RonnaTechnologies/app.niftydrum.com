@@ -65,13 +65,15 @@ header {
 
 div[id$="-mode"] {
   display: flex;
+  justify-content: center;
   flex-wrap: wrap;
-  gap: 2rem;
+  gap: 3rem;
 }
 
 section {
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 range-slider {
@@ -187,6 +189,8 @@ time-bar-chart {
   background-color: var(--pico-form-element-background-color);
   border: var(--border);
   border-radius: var(--pico-border-radius);
+  width: 100%;
+  min-width: 500px;
 }
 
 time-bar-chart svg text {

@@ -18,12 +18,8 @@ const hhcInterval = document.querySelector('range-slider[name="hhc-interval"]');
 const hhcNoiseThreshold = document.querySelector('range-slider[name="hhc-noise-threshold"]');
 // const hhcGain = document.querySelector('range-slider[name="hhc-gain"]');
 const hhcOffset = document.querySelector('range-slider[name="hhc-offset"]');
-
-// TODO: add hhc_trig other element
-// const hhcScan = document.querySelector('range-slider[name="hhc-scan"]');
-// const hhcScanThreshold = document.querySelector('range-slider[name="hhc-scan-threshold"]');
-
 const hhcTrig = document.querySelector('range-slider[name="hhc-trig"]');
+// TODO: add hhc_trig other element
 
 // Modals elements
 const aboutModal = document.querySelector('dialog#about-modal');
@@ -81,14 +77,10 @@ hhcOffset.addEventListener('hhc-offset', () => {
     fetch(`set/${currentSensor}/offset/${hhcOffset.threshold}`);
 });
 
-// TODO: add hhc_trig other element events
-// hhcScan.addEventListener('hhc-scan', () => {
-//     fetch(`set/${"hhc_trig"}/scan/${hhcScan.threshold}`);
-// });
-
-// hhcScanThreshold.addEventListener('hhc-scan-threshold', () => {
-//     fetch(`set/${"hhc_trig"}/velThresh/${hhcScanThreshold.threshold}`);
-// });
+hhcTrig.addEventListener('hhc-trig', () => {
+    fetch(`set/${currentSensor}/trig/${hhcTrig.threshold}`);
+});
+// TODO: add other hhc_trig events
 
 
 // Update sensor with current data
@@ -103,7 +95,7 @@ function updateSensorData () {
         hhcOffset.threshold = data[currentSensor].offset;
         hhcTrig.threshold = data[currentSensor].trig;
 
-        // TODO: add hhc_trig
+        // TODO: add other hhc_trig values
         return null;
     }
 
