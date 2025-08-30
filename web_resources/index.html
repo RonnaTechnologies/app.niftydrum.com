@@ -29,7 +29,7 @@
       <p>by Ronna Technologies</p>
     </hgroup>
 
-    <button class="secondary" onclick="toggleAboutModal()">
+    <button id="about" class="secondary" onclick="toggleAboutModal()">
       About
     </button>
 
@@ -46,8 +46,10 @@
       <option value="hhc">Hi-hat Controller</option>
     </select>
 
-    <button class="secondary" onclick="toggleResetModal()">Reset</button>
-    <button onclick="toggleSaveModal()">Save</button>
+    <div id="save-reset-buttons">
+      <button class="secondary" onclick="toggleResetModal()">Reset</button>
+      <button onclick="toggleSaveModal()">Save</button>
+    </div>
   </header>
 
   <main>
