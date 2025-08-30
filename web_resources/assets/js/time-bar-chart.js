@@ -95,9 +95,16 @@ class TimeBarChart extends HTMLElement {
         bar.input.addEventListener("input", (e) => {
           const val = parseFloat(e.target.value);
           if (!isNaN(val)) {
-            bar.setWidth(val);
+            bar.setWidth(val);            
             this.debouncedDispatch();
           }
+        });
+
+        bar.input.addEventListener("focus", (e) => {
+          bar.handle.classList.add('active-time-bar');
+        });
+        bar.input.addEventListener("blur", (e) => {
+          bar.handle.classList.remove('active-time-bar');
         });
       }
 
@@ -173,6 +180,13 @@ class TimeBarChart extends HTMLElement {
       this.thresholdLine.setAttribute("y1", newY);
       this.thresholdLine.setAttribute("y2", newY);
     });
+
+    this.thresholdInput.addEventListener("focus", () => {
+      this.thresholdLine.classList.add('active-time-bar');
+    });
+    this.thresholdInput.addEventListener("blur", () => {
+      this.thresholdLine.classList.remove('active-time-bar');
+    });
   }
 
   setSvgWidth(newWidth) {
@@ -215,6 +229,7 @@ class TimeBarChart extends HTMLElement {
         const bar = this.bars[this.targetIndex];
         if (bar.input) {
           bar.input.value = appliedWidth.toFixed(1);
+          bar.input.focus();
         }
       } else if (this.isDraggingThreshold) {
         const dy = e.clientY - this.startY;
@@ -226,6 +241,7 @@ class TimeBarChart extends HTMLElement {
         const percFromBottom = ((this.svgHeight - newY) / this.svgHeight) * 100;
         if (this.thresholdInput) {
           this.thresholdInput.value = percFromBottom.toFixed(1);
+          this.thresholdInput.focus();
         }
       }
     });

@@ -253,6 +253,11 @@ time-bar-chart .parameters {
   padding: 0.5rem;
 }
 
+.active-time-bar {
+  stroke: var(--pico-primary-background) !important;
+  fill: var(--pico-primary-background) !important;
+}
+
 dialog:has(footer) article {
   padding-block-end: 0;
 }
