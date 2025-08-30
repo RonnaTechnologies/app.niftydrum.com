@@ -38,23 +38,26 @@ getConfig();
 // Events handling
 sensorsSelect.addEventListener("change", (e) => {
     currentSensor = e.target.value;
-    getConfig()
-    updateSensorData()
-})
+    getConfig();
+});
 
 midiNote.addEventListener('change', () => {
+    if (currentSensor === "hhc") return null;
     fetch(`set/${currentSensor}/note/${Number(midiNote.value)}`);
 });
 
 bezierCurve.addEventListener('curve', (e) => {
-    fetch(`set/${currentSensor}/curve/${encodeURIComponent(JSON.stringify(e.detail.curve))}`);
-})
+    if (currentSensor === "hhc") return null;
+    fetch(`set/${currentSensor}/curve/${encodeURIComponent(JSON.stringify({ p: e.detail.curve }))}`);
+});
 
 gain.addEventListener('gain', () => {
+    if (currentSensor === "hhc") return null;
     fetch(`set/${currentSensor}/gain/${gain.threshold}`);
 });
 
-parameters.addEventListener('change', (event) => {
+parameters.addEventListener('parameters', (event) => {
+    if (currentSensor === "hhc") return null;
     for (const key in event.detail) {
         const value = event.detail[key];
         fetch(`set/${currentSensor}/${key}/${value}`);
@@ -62,22 +65,27 @@ parameters.addEventListener('change', (event) => {
 });
 
 hhcInterval.addEventListener('hhc-interval', () => {
+    if (currentSensor !== "hhc") return null;
     fetch(`set/${currentSensor}/interval/${hhcInterval.threshold}`);
 });
 
 hhcNoiseThreshold.addEventListener('hhc-noise-threshold', () => {
+    if (currentSensor !== "hhc") return null;
     fetch(`set/${currentSensor}/threshold/${hhcNoiseThreshold.threshold}`);
 });
 
 // hhcGain.addEventListener('hhc-gain', () => {
+    // if (currentSensor !== "hhc") return null;
 //     fetch(`set/${"currentSensor"}/gain/${hhcGain.threshold}`);
 // });
 
 hhcOffset.addEventListener('hhc-offset', () => {
+    if (currentSensor !== "hhc") return null;
     fetch(`set/${currentSensor}/offset/${hhcOffset.threshold}`);
 });
 
 hhcTrig.addEventListener('hhc-trig', () => {
+    if (currentSensor !== "hhc") return null;
     fetch(`set/${currentSensor}/trig/${hhcTrig.threshold}`);
 });
 // TODO: add other hhc_trig events
@@ -89,27 +97,24 @@ function updateSensorData () {
 
     if (currentSensor === "hhc") {
         setHhcMode();
-        hhcInterval.threshold = data[currentSensor].interval;
-        hhcNoiseThreshold.threshold = data[currentSensor].threshold;
-        // hhcGain.threshold = data[currentSensor].gain;
-        hhcOffset.threshold = data[currentSensor].offset;
-        hhcTrig.threshold = data[currentSensor].trig;
+        const { interval, threshold, gain, offset, trig } = data[currentSensor]
 
-        // TODO: add other hhc_trig values
+        hhcInterval.threshold = interval;
+        hhcNoiseThreshold.threshold = threshold;
+        // hhcGain.threshold = gain;
+        hhcOffset.threshold = offset;
+        hhcTrig.threshold = trig;
         return null;
+    } else {
+        setDefaultMode();
+        const { note, curve, gain, scan, mask, decay, threshold } = data[currentSensor];
+
+        midiNote.value = note;
+        bezierCurve.values = curve.p;
+        gain.threshold = gain;
+        parameters.setData({scan, mask, decay, threshold})
     }
-
-    setDefaultMode();
-    midiNote.value = data[currentSensor].note;
-    parameters.mask = data[currentSensor]?.mask;
-    bezierCurve.values = data[currentSensor]?.curve?.p;
-    gain.threshold = data[currentSensor].gain;
-    parameters.scan = data[currentSensor]?.scan;
-    parameters.mask = data[currentSensor]?.mask;
-    parameters.decay = data[currentSensor]?.decay;
-    parameters.threshold = data[currentSensor]?.threshold;
 }
-
 
 // Helper functions
 function setDefaultMode() {

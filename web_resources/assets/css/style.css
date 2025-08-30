@@ -216,7 +216,7 @@ time-bar-chart {
   border: var(--border);
   border-radius: var(--pico-border-radius);
   width: 100%;
-  min-width: 450px;
+  min-width: 500px;
 }
 
 time-bar-chart svg text {
@@ -276,10 +276,8 @@ dialog footer {
 
   header {
     grid-template-areas:
-      "logo . about"
-      "select select select";
-    grid-template-columns: auto 1fr auto;
-    grid-template-rows: auto auto;
+      "logo about select";
+    grid-template-columns: auto auto 1fr;
   }
 
   #save-reset-buttons {
@@ -293,5 +291,15 @@ dialog footer {
 
   time-bar-chart {
     min-width: 90vw;
+  }
+}
+
+@media (width <= 576px) {
+  header {
+    grid-template-areas:
+    "logo about"
+    "select select";
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
   }
 }

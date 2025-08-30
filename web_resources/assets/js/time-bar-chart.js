@@ -1,6 +1,7 @@
 class TimeBarChart extends HTMLElement {
   constructor() {
     super();
+    this._name = this.getAttribute('name');
     this.svg = null;
     this.svgWidth = this.clientWidth;
     this.svgHeight = 300;
@@ -15,13 +16,7 @@ class TimeBarChart extends HTMLElement {
     this.thresholdInput = null;
     this.isDraggingThreshold = false;
     this.startY = 0;
-    this.thresholdInitValue = 200;
-    this._lastDispatched = {
-      scan: null,
-      mask: null,
-      decay: null,
-      threshold: null
-    };
+    this.thresholdInitValue = 10;
   }
 
   connectedCallback() {
@@ -37,36 +32,21 @@ class TimeBarChart extends HTMLElement {
 
     this.resizeObserver = new ResizeObserver(() => {
       this.svgWidth = this.clientWidth || 600;
-    })
+    });
 
-    this.debouncedDispatch = debounce(() => {
-      const current = {
-        scan: this.scan,
-        mask: this.mask,
-        decay: this.decay,
-        threshold: this.threshold
-      };
-    
-      const changes = {};
-      let hasChanged = false;
-    
-      for (const key in current) {
-        if (current[key] !== this._lastDispatched[key]) {
-          changes[key] = current[key];
-          hasChanged = true;
-        }
-      }
-    
-      if (hasChanged) {
-        this.dispatchEvent(new CustomEvent('change', {
-          detail: changes,
+    this.debouncedDispatch = debounce(() => {    
+        this.dispatchEvent(new CustomEvent(this._name, {
+          detail: {
+            scan: this.scan,
+            mask: this.mask,
+            decay: this.decay,
+            threshold: this.threshold
+          },
           bubbles: true,
           composed: true
         }));
-
-        Object.assign(this._lastDispatched, changes);
       }
-    });
+    );
 
     this.thresholdLine = document.getElementById("threshold-line");
     this.thresholdInput = document.querySelector('input[name="threshold"]');
@@ -149,7 +129,7 @@ class TimeBarChart extends HTMLElement {
         const newY = this.svgHeight - (clamped / 100) * this.svgHeight;
         this.thresholdLine.setAttribute("y1", newY);
         this.thresholdLine.setAttribute("y2", newY);
-    
+
         if (this.thresholdInput) {
           this.thresholdInput.value = clamped.toFixed(1);
         }
@@ -198,9 +178,9 @@ class TimeBarChart extends HTMLElement {
   setSvgWidth(newWidth) {
     this.svgWidth = newWidth;
     this.svg.setAttribute('width', this.svgWidth);
-  
+
     const viewBoxValues = this.svg.getAttribute('viewBox').split(' ').map(Number);
-    viewBoxValues[2] = this.svgWidth; // fixe largeur viewBox
+    viewBoxValues[2] = this.svgWidth;
     this.svg.setAttribute('viewBox', viewBoxValues.join(' '));
   }
 
@@ -228,11 +208,10 @@ class TimeBarChart extends HTMLElement {
         const dxPixels = e.clientX - this.startX;
         const ratio = this.svgWidth / this.maxDuration;
         const dxLogical = dxPixels / ratio;
-    
+
         const newWidth = this.originalWidth + dxLogical;
-    
         const appliedWidth = this.bars[this.targetIndex].setWidth(newWidth);
-    
+
         const bar = this.bars[this.targetIndex];
         if (bar.input) {
           bar.input.value = appliedWidth.toFixed(1);
@@ -243,19 +222,25 @@ class TimeBarChart extends HTMLElement {
         newY = Math.min(this.svgHeight, Math.max(0, newY));
         this.thresholdLine.setAttribute("y1", newY);
         this.thresholdLine.setAttribute("y2", newY);
-  
+
         const percFromBottom = ((this.svgHeight - newY) / this.svgHeight) * 100;
         if (this.thresholdInput) {
           this.thresholdInput.value = percFromBottom.toFixed(1);
         }
       }
-      this.debouncedDispatch();
     });
 
     window.addEventListener("mouseup", () => {
       this.isResizing = false;
       this.isDraggingThreshold = false;
     });
+  }
+
+  setData({ scan, mask, decay, threshold }) {
+    this.scan = scan;
+    this.mask = mask;
+    this.decay = decay;
+    this.threshold = threshold;
   }
 }
 
