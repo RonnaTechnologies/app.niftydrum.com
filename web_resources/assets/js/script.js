@@ -27,7 +27,8 @@ const resetModal = document.querySelector('dialog#reset-modal');
 const saveModal = document.querySelector('dialog#save-modal');
 
 // Init
-async function getConfig () {
+async function getConfig()
+{
     const response = await fetch('/get_all');
     data = await response.json();
     updateSensorData();
@@ -36,55 +37,81 @@ async function getConfig () {
 getConfig();
 
 // Events handling
-sensorsSelect.addEventListener("change", (e) => {
+sensorsSelect.addEventListener("change", (e) =>
+{
     currentSensor = e.target.value;
     getConfig();
 });
 
-midiNote.addEventListener('change', () => {
+midiNote.addEventListener('change', () =>
+{
     if (currentSensor === "hhc") return null;
     fetch(`set/${currentSensor}/note/${Number(midiNote.value)}`);
 });
 
-bezierCurve.addEventListener('curve', (e) => {
+bezierCurve.addEventListener('curve', (e) =>
+{
     if (currentSensor === "hhc") return null;
-    fetch(`set/${currentSensor}/curve/${encodeURIComponent(JSON.stringify({ p: e.detail.curve }))}`);
+
+    const curveData = e.detail.curve.map(subArray =>
+        subArray.map(num => parseInt(num, 10))
+    );
+
+    console.log(JSON.stringify({ p: curveData }))
+
+    const jsonStr = JSON.stringify({ p: curveData });
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+
+    const formData = new FormData();
+    formData.append('file', blob, 'json_curve');
+
+    fetch('/curve', {
+        method: 'POST',
+        body: formData,
+    });
 });
 
-gain.addEventListener('gain', () => {
+gain.addEventListener('gain', () =>
+{
     if (currentSensor === "hhc") return null;
     fetch(`set/${currentSensor}/gain/${gain.threshold}`);
 });
 
-parameters.addEventListener('parameters', (event) => {
+parameters.addEventListener('parameters', (event) =>
+{
     if (currentSensor === "hhc") return null;
-    for (const key in event.detail) {
+    for (const key in event.detail)
+    {
         const value = event.detail[key];
         fetch(`set/${currentSensor}/${key}/${value}`);
     }
 });
 
-hhcInterval.addEventListener('hhc-interval', () => {
+hhcInterval.addEventListener('hhc-interval', () =>
+{
     if (currentSensor !== "hhc") return null;
     fetch(`set/${currentSensor}/interval/${hhcInterval.threshold}`);
 });
 
-hhcNoiseThreshold.addEventListener('hhc-noise-threshold', () => {
+hhcNoiseThreshold.addEventListener('hhc-noise-threshold', () =>
+{
     if (currentSensor !== "hhc") return null;
     fetch(`set/${currentSensor}/threshold/${hhcNoiseThreshold.threshold}`);
 });
 
 // hhcGain.addEventListener('hhc-gain', () => {
-    // if (currentSensor !== "hhc") return null;
+// if (currentSensor !== "hhc") return null;
 //     fetch(`set/${"currentSensor"}/gain/${hhcGain.threshold}`);
 // });
 
-hhcOffset.addEventListener('hhc-offset', () => {
+hhcOffset.addEventListener('hhc-offset', () =>
+{
     if (currentSensor !== "hhc") return null;
     fetch(`set/${currentSensor}/offset/${hhcOffset.threshold}`);
 });
 
-hhcTrig.addEventListener('hhc-trig', () => {
+hhcTrig.addEventListener('hhc-trig', () =>
+{
     if (currentSensor !== "hhc") return null;
     fetch(`set/${currentSensor}/trig/${hhcTrig.threshold}`);
 });
@@ -92,10 +119,12 @@ hhcTrig.addEventListener('hhc-trig', () => {
 
 
 // Update sensor with current data
-function updateSensorData () {
+function updateSensorData()
+{
     if (!data[currentSensor]) return null;
 
-    if (currentSensor === "hhc") {
+    if (currentSensor === "hhc")
+    {
         setHhcMode();
         const { interval, threshold, gain, offset, trig } = data[currentSensor]
 
@@ -105,48 +134,56 @@ function updateSensorData () {
         hhcOffset.threshold = offset;
         hhcTrig.threshold = trig;
         return null;
-    } else {
+    } else
+    {
         setDefaultMode();
         const { note, curve, gain, scan, mask, decay, threshold } = data[currentSensor];
 
         midiNote.value = note;
         bezierCurve.values = curve.p;
         gain.threshold = gain;
-        parameters.setData({scan, mask, decay, threshold})
+        parameters.setData({ scan, mask, decay, threshold })
     }
 }
 
 // Helper functions
-function setDefaultMode() {
+function setDefaultMode()
+{
     defaultContainer.toggleAttribute('disabled', false);
     hhcContainer.toggleAttribute('disabled', true);
 }
 
-function setHhcMode() {
+function setHhcMode()
+{
     defaultContainer.toggleAttribute('disabled', true);
     hhcContainer.toggleAttribute('disabled', false);
 }
 
-function resetSettings() {
+function resetSettings()
+{
     console.log("Reset settings");
     // TODO: Fetch old config
     toggleResetModal();
 }
 
-function saveSettings() {
+function saveSettings()
+{
     console.log("Save settings");
     // TODO: Post new config
     toggleSaveModal();
 }
 
-function toggleAboutModal() {
+function toggleAboutModal()
+{
     aboutModal.toggleAttribute('open');
 }
 
-function toggleResetModal() {
+function toggleResetModal()
+{
     resetModal.toggleAttribute('open');
 }
 
-function toggleSaveModal() {
+function toggleSaveModal()
+{
     saveModal.toggleAttribute('open');
 }
