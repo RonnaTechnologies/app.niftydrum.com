@@ -20,25 +20,25 @@ response_data = [28, 251, 236, 20, 55, 239, 68, 252, 75, 159, 90, 124, 86, 25, 1
 # JSON object
 config = {
     "kick": {
-        "scan": 100,
-        "mask": 110,
-        "decay": 120,
+        "scan": 3000,
+        "mask": 110000,
+        "decay": 120000,
         "threshold": 10,
         "note": 36,
         "gain": 1.1,
         "curve": {"p": [[0, 10], [192, 192], [128, 64], [256, 256]]}
     },
     "snare": {
-        "scan": 120,
-        "mask": 120,
-        "decay": 120,
+        "scan": 2000,
+        "mask": 12000,
+        "decay": 120000,
         "threshold": 20,
         "note": 38,
         "gain": 1.2,
         "curve": {"p": [[0, 10], [192, 192], [128, 64], [256, 256]]}
     },
     "hihat": {
-        "scan": 3000,
+        "scan": 30000,
         "mask": 20000,
         "decay": 130000,
         "threshold": 50,

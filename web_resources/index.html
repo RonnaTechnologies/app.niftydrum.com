@@ -87,9 +87,9 @@
 
       <section style="flex:1">
         Parameters
-        <time-bar-chart maxDuration="600" name="parameters">
+        <time-bar-chart maxDuration="400" name="parameters">
           <svg id="timeline"
-              viewBox="0 0 600 300"
+              viewBox="0 0 400 300"
               preserveAspectRatio="none">
             <g data-name="scan">
               <rect class="bar" x="0" y="0" width="80" height="300" fill="#d0eaff" />
@@ -112,15 +112,15 @@
           <div class="grid parameters">
             <label>
               <small>Scan (ms)</small>
-              <input type="number" name="scan" id="scan-time" min="40" max="200">
+              <input type="number" name="scan" id="scan-time" min="2" max="10">
             </label>
             <label>
               <small>Mask (ms)</small>
-              <input type="number" name="mask" id="mask-time" min="50" max="200" >
+              <input type="number" name="mask" id="mask-time" min="10" max="50" >
             </label>
             <label>
               <small>Decay (ms)</small>
-              <input type="number" name="decay" id="decay" min="80" max="200">
+              <input type="number" name="decay" id="decay" min="10" max="300">
             </label>
             <label>
               <small>Threshold (%)</small>
