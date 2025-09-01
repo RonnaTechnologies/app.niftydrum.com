@@ -59,7 +59,26 @@ async function getConfig()
     updateSensorData();
 }
 
-getConfig();
+
+async function init()
+{
+    await getConfig();
+    const _ = await fetch('/stop_noise_logger');
+    const __ = await fetch('/start_noise_logger');
+
+    const ev = new EventSource("event")
+
+    ev.onmessage = function (e) 
+    {
+        const data = JSON.parse(e.data);
+        if ('value' in data)
+        {
+            triggerThreshold.value = data.value
+        }
+    }
+}
+
+init();
 
 // Events handling
 sensorsSelect.addEventListener("change", (e) =>
