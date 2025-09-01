@@ -27,6 +27,30 @@ const aboutModal = document.querySelector('dialog#about-modal');
 const resetModal = document.querySelector('dialog#reset-modal');
 const saveModal = document.querySelector('dialog#save-modal');
 
+
+function fixedToFloat(rawValue, intBits, fracBits)
+{
+    // const totalBits = intBits + fracBits;
+    // const maxValue = Math.pow(2, totalBits);
+
+    // Ensure the raw value is within the valid range
+    // if (rawValue >= maxValue)
+    // {
+    //     throw new Error("Raw value out of range");
+    // }
+
+    // Calculate the integer part
+    const integerPart = rawValue >> fracBits;
+
+    // Calculate the fractional part
+    const fractionalPart = (rawValue & ((1 << fracBits) - 1)) / Math.pow(2, fracBits);
+
+    // Combine the integer and fractional parts
+    const floatValue = integerPart + fractionalPart;
+
+    return floatValue.toFixed(2);
+}
+
 // Init
 async function getConfig()
 {
@@ -73,7 +97,7 @@ bezierCurve.addEventListener('curve', (e) =>
 triggerGain.addEventListener('gain', () =>
 {
     if (currentSensor === "hhc") return null;
-    fetch(`set/${currentSensor}/gain/${triggerGain.threshold}`);
+    fetch(`set/${currentSensor}/gain/${triggerGain.threshold.toFixed(2)}`);
 });
 
 triggerThreshold.addEventListener('threshold', () =>
@@ -147,7 +171,7 @@ function updateSensorData()
 
         midiNote.value = note;
         bezierCurve.values = curve.p;
-        triggerGain.threshold = gain;
+        triggerGain.threshold = fixedToFloat(gain, 16, 15);;
         triggerThreshold.threshold = Number(threshold);
         parameters.setData({
             scan: Number(scan / 1000),
