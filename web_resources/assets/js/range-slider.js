@@ -65,7 +65,7 @@ class RangeSlider extends HTMLElement
 
     _clampToMax(val)
     {
-        return Math.min(this._max, Math.max(0, val));
+        return Math.min(this._max, Math.max(this._min, val));
     }
 
     updateValue()
