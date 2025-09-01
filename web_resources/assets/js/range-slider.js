@@ -1,5 +1,7 @@
-class RangeSlider extends HTMLElement {
-    constructor() {
+class RangeSlider extends HTMLElement
+{
+    constructor()
+    {
         super();
         this._name = this.getAttribute('name');
         this._value = 0;
@@ -11,7 +13,8 @@ class RangeSlider extends HTMLElement {
         this.onPointerMove = this.onPointerMove.bind(this);
         this.onPointerUp = this.onPointerUp.bind(this);
 
-        this.debouncedDispatch = debounce(() => {
+        this.debouncedDispatch = debounce(() =>
+        {
             this.dispatchEvent(new CustomEvent(this._name, {
                 detail: { threshold: this._marker },
                 bubbles: true,
@@ -20,7 +23,8 @@ class RangeSlider extends HTMLElement {
         });
     }
 
-    connectedCallback() {
+    connectedCallback()
+    {
         this.container = this.querySelector('.slider-container');
         this.marker = this.querySelector('.marker');
         this.label = this.marker?.querySelector('.label');
@@ -29,62 +33,73 @@ class RangeSlider extends HTMLElement {
 
         this.updateValue();
         this.updateMarker();
-        this.resizeObserver = new ResizeObserver(() => {
+        this.resizeObserver = new ResizeObserver(() =>
+        {
             this.updateMarker();
         });
         this.resizeObserver.observe(this.container);
     }
 
-    disconnectedCallback() {
+    disconnectedCallback()
+    {
         this.resizeObserver?.disconnect();
     }
 
-    set value(val) {
+    set value(val)
+    {
         this._value = this._clampToMax(val);
         this.updateValue();
     }
 
-    set threshold(val) {
+    set threshold(val)
+    {
         this._marker = this._clampToMax(val);
         this.updateMarker();
         this.updatelabel();
     }
 
-    get threshold() {
+    get threshold()
+    {
         return this._marker;
     }
 
-    _clampToMax(val) {
+    _clampToMax(val)
+    {
         return Math.min(this._max, Math.max(0, val));
     }
 
-    updateValue() {
+    updateValue()
+    {
         const range = this._max - this._min;
         const normalizedValue = (this._value - this._min) / range;
         const percent = normalizedValue * 100;
-    
+
         this.container.style.background = `linear-gradient(to top, orange ${percent}%, transparent ${percent}%)`;
     }
 
-    updateMarker() {
+    updateMarker()
+    {
         const height = this.container.clientHeight;
         const markerHeight = this.marker?.offsetHeight || 0;
-    
+
         const range = this._max - this._min;
         const normalizedMarker = (this._marker - this._min) / range;
         const ratio = 1 - normalizedMarker;
         const translateY = ratio * (height - markerHeight);
-    
-        this.marker.style.transform = `translateY(${translateY}px)`;
-    }    
 
-    updatelabel() {
-        if (this.label) {
+        this.marker.style.transform = `translateY(${translateY}px)`;
+    }
+
+    updatelabel()
+    {
+        if (this.label)
+        {
             this.label.textContent = Number(this._marker.toFixed(2)).toString();
         }
     }
 
-    startDrag(e) {
+    startDrag(e)
+    {
         e.preventDefault();
         this.dragging = true;
 
@@ -92,20 +107,22 @@ class RangeSlider extends HTMLElement {
         window.addEventListener('pointerup', this.onPointerUp);
     }
 
-    onPointerMove(e) {
+    onPointerMove(e)
+    {
         const rect = this.container.getBoundingClientRect();
         const offsetY = e.clientY - rect.top;
         const clampedY = Math.min(rect.height, Math.max(0, offsetY));
         const ratio = 1 - (clampedY / rect.height);
 
         const oldThreshold = this.threshold;
-        this.threshold = this._min + ( ratio * (this._max - this._min));
+        this.threshold = this._min + (ratio * (this._max - this._min));
 
         if (oldThreshold === this.threshold) return;
         this.debouncedDispatch()
     }
 
-    onPointerUp() {
+    onPointerUp()
+    {
         this.dragging = false;
 
         window.removeEventListener('pointermove', this.onPointerMove);
