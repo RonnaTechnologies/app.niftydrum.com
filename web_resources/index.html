@@ -85,6 +85,17 @@
         </range-slider>
       </section>
 
+      <section>
+        Threshold
+        <range-slider min="10" max="100" name="threshold">
+          <div class="slider-container">
+            <div class="marker">
+              <span class="label"></span>
+            </div>
+          </div>
+        </range-slider>
+      </section>
+
       <section style="flex:1">
         Parameters
         <time-bar-chart maxDuration="400" name="parameters">
@@ -105,8 +116,6 @@
               <rect class="bar" x="0" y="0" width="160" height="300" fill="#e0ffe0" />
               <rect class="resize-handle" x="155" y="0" width="5" height="300" />
             </g>
-        
-            <line id="threshold-line" x1="0" x2="100%" y1="210" y2="210" />
           </svg>
 
           <div class="grid parameters">
@@ -121,10 +130,6 @@
             <label>
               <small>Decay (ms)</small>
               <input type="number" name="decay" id="decay" min="10" max="300">
-            </label>
-            <label>
-              <small>Threshold (%)</small>
-              <input type="number" name="threshold" id="threshold-line" min="0" max="100">
             </label>
           </div>
         </time-bar-chart>

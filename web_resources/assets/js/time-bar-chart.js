@@ -11,12 +11,6 @@ class TimeBarChart extends HTMLElement {
     this.targetIndex = -1;
     this.startX = 0;
     this.originalWidth = 0;
-
-    this.thresholdLine = null;
-    this.thresholdInput = null;
-    this.isDraggingThreshold = false;
-    this.startY = 0;
-    this.thresholdInitValue = 10;
   }
 
   connectedCallback() {
@@ -40,16 +34,12 @@ class TimeBarChart extends HTMLElement {
             scan: this.scan,
             mask: this.mask,
             decay: this.decay,
-            threshold: this.threshold
           },
           bubbles: true,
           composed: true
         }));
       }
     );
-
-    this.thresholdLine = document.getElementById("threshold-line");
-    this.thresholdInput = document.querySelector('input[name="threshold"]');
 
     const groups = Array.from(this.svg.querySelectorAll("g"));
 
@@ -124,28 +114,6 @@ class TimeBarChart extends HTMLElement {
       });
     });
 
-    Object.defineProperty(this, 'threshold', {
-      get: () => {
-        if (!this.thresholdLine) return null;
-        const y = parseFloat(this.thresholdLine.getAttribute("y1"));
-        return ((this.svgHeight - y) / this.svgHeight) * 100;
-      },
-      set: (val) => {
-        if (!this.thresholdLine) return;
-        const clamped = Math.max(0, Math.min(100, val));
-        const newY = this.svgHeight - (clamped / 100) * this.svgHeight;
-        this.thresholdLine.setAttribute("y1", newY);
-        this.thresholdLine.setAttribute("y2", newY);
-
-        if (this.thresholdInput) {
-          this.thresholdInput.value = clamped.toFixed(1);
-        }
-        this.debouncedDispatch();
-      },
-      enumerable: true
-    });
-
-    this.initThresholdInput();
     this.positionBars();
     this.setupEvents();
   }
@@ -160,32 +128,6 @@ class TimeBarChart extends HTMLElement {
       bar.group.setAttribute("transform", `translate(${currentX},0)`);
       bar.handle.setAttribute("x", bar.getWidth() - 5);
       currentX += bar.getWidth();
-    });
-  }
-
-  initThresholdInput() {
-    if (!this.thresholdLine || !this.thresholdInput) return;
-
-    const y = parseFloat(this.thresholdLine.getAttribute("y1"));
-    const perc = ((this.svgHeight - y) / this.svgHeight) * 100;
-    this.thresholdInput.value = perc.toFixed(1);
-    this.thresholdInput.min = 0;
-    this.thresholdInput.max = 100;
-
-    this.thresholdInput.addEventListener("input", (e) => {
-      const val = parseFloat(e.target.value);
-      if (isNaN(val)) return;
-      const clamped = Math.max(0, Math.min(100, val));
-      const newY = this.svgHeight - (clamped / 100) * this.svgHeight;
-      this.thresholdLine.setAttribute("y1", newY);
-      this.thresholdLine.setAttribute("y2", newY);
-    });
-
-    this.thresholdInput.addEventListener("focus", () => {
-      this.thresholdLine.classList.add('active-time-bar');
-    });
-    this.thresholdInput.addEventListener("blur", () => {
-      this.thresholdLine.classList.remove('active-time-bar');
     });
   }
 
@@ -210,13 +152,6 @@ class TimeBarChart extends HTMLElement {
       }
     });
 
-    this.thresholdLine.addEventListener("mousedown", (e) => {
-      this.isDraggingThreshold = true;
-      this.startY = e.clientY;
-      this.thresholdInitValue = parseFloat(this.thresholdLine.getAttribute("y1"));
-      e.preventDefault();
-    });
-
     window.addEventListener("mousemove", (e) => {
       if (this.isResizing) {
         const dxPixels = e.clientX - this.startX;
@@ -231,18 +166,6 @@ class TimeBarChart extends HTMLElement {
           bar.input.value = appliedWidth.toFixed(1);
           bar.input.focus();
         }
-      } else if (this.isDraggingThreshold) {
-        const dy = e.clientY - this.startY;
-        let newY = this.thresholdInitValue + dy;
-        newY = Math.min(this.svgHeight, Math.max(0, newY));
-        this.thresholdLine.setAttribute("y1", newY);
-        this.thresholdLine.setAttribute("y2", newY);
-
-        const percFromBottom = ((this.svgHeight - newY) / this.svgHeight) * 100;
-        if (this.thresholdInput) {
-          this.thresholdInput.value = percFromBottom.toFixed(1);
-          this.thresholdInput.focus();
-        }
       }
     });
 
@@ -252,11 +175,10 @@ class TimeBarChart extends HTMLElement {
     });
   }
 
-  setData({ scan, mask, decay, threshold }) {
+  setData({ scan, mask, decay }) {
     this.scan = scan;
     this.mask = mask;
     this.decay = decay;
-    this.threshold = threshold;
   }
 }
 

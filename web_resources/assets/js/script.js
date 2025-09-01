@@ -11,6 +11,7 @@ let data = null;
 const midiNote = document.querySelector('#midi-note');
 const bezierCurve = document.querySelector('bezier-curve');
 const gain = document.querySelector('range-slider[name="gain"]');
+const threshold = document.querySelector('range-slider[name="threshold"]');
 const parameters = document.querySelector('time-bar-chart');
 
 // HHC settings elements
@@ -70,14 +71,18 @@ gain.addEventListener('gain', () => {
     fetch(`set/${currentSensor}/gain/${gain.threshold}`);
 });
 
+threshold.addEventListener('threshold', () => {
+    if (currentSensor === "hhc") return null;
+    fetch(`set/${currentSensor}/threshold/${Math.round(threshold.threshold)}`);
+});
+
 parameters.addEventListener('parameters', (event) => {
     if (currentSensor === "hhc") return null;
-    const { scan, mask, decay, threshold } = event.detail;
+    const { scan, mask, decay } = event.detail;
 
     fetch(`set/${currentSensor}/scan/${Math.round(scan * 1000)}`);
     fetch(`set/${currentSensor}/mask/${Math.round(mask * 1000)}`);
     fetch(`set/${currentSensor}/decay/${Math.round(decay * 1000)}`);
-    fetch(`set/${currentSensor}/threshold/${Math.round(threshold)}`);
 });
 
 hhcInterval.addEventListener('hhc-interval', () => {
@@ -128,11 +133,11 @@ function updateSensorData() {
         midiNote.value = note;
         bezierCurve.values = curve.p;
         gain.threshold = gain;
+        threshold.threshold = Number(threshold);
         parameters.setData({
             scan: Number(scan / 1000),
             mask: Number(mask / 1000),
             decay: Number(decay / 1000),
-            threshold: Number(threshold)
         })
     }
 }

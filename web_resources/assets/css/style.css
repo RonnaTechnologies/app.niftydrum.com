@@ -219,7 +219,7 @@ time-bar-chart {
   border: var(--border);
   border-radius: var(--pico-border-radius);
   width: 100%;
-  min-width: 500px;
+  min-width: 400px;
 }
 
 time-bar-chart svg text {

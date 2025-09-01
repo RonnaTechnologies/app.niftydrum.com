@@ -19,101 +19,17 @@ response_data = [28, 251, 236, 20, 55, 239, 68, 252, 75, 159, 90, 124, 86, 25, 1
 
 # JSON object
 config = {
-    "kick": {
-        "scan": 3000,
-        "mask": 110000,
-        "decay": 120000,
-        "threshold": 10,
-        "note": 36,
-        "gain": 1.1,
-        "curve": {"p": [[0, 10], [192, 192], [128, 64], [256, 256]]}
-    },
-    "snare": {
-        "scan": 2000,
-        "mask": 12000,
-        "decay": 120000,
-        "threshold": 20,
-        "note": 38,
-        "gain": 1.2,
-        "curve": {"p": [[0, 10], [192, 192], [128, 64], [256, 256]]}
-    },
-    "hihat": {
-        "scan": 30000,
-        "mask": 20000,
-        "decay": 130000,
-        "threshold": 50,
-        "note": 42,
-        "gain": 1.3,
-        "curve": {"p": [[0, 20], [192, 192], [128, 64], [256, 256]]}
-    },
-    "crash1": {
-        "scan": 3000,
-        "mask": 20000,
-        "decay": 130000,
-        "threshold": 50,
-        "note": 49,
-        "gain": 1.4,
-        "curve": {"p": [[0, 30], [192, 192], [128, 64], [256, 256]]}
-    },
-    "tom1": {
-        "scan": 3000,
-        "mask": 20000,
-        "decay": 130000,
-        "threshold": 50,
-        "note": 50,
-        "gain": 1.5,
-        "curve": {"p": [[0, 40], [192, 192], [128, 64], [256, 256]]}
-    },
-    "tom3": {
-        "scan": 3000,
-        "mask": 20000,
-        "decay": 130000,
-        "threshold": 50,
-        "note": 41,
-        "gain": 1.6,
-        "curve": {"p": [[0, 50], [192, 192], [128, 64], [256, 256]]}
-    },
-    "ride": {
-        "scan": 3000,
-        "mask": 20000,
-        "decay": 130000,
-        "threshold": 50,
-        "note": 51,
-        "gain": 1.7,
-        "curve": {"p": [[0, 60], [192, 192], [128, 64], [256, 256]]}
-    },
-    "tom2": {
-        "scan": 3000,
-        "mask": 20000,
-        "decay": 130000,
-        "threshold": 1800,
-        "note": 47,
-        "gain": 1.8,
-        "curve": {"p": [[0, 70], [192, 192], [128, 64], [256, 256]]}
-    },
-    "crash2": {
-        "scan": 3000,
-        "mask": 20000,
-        "decay": 130000,
-        "threshold": 1800,
-        "note": 57,
-        "gain": 1.9,
-        "curve": {"p": [[0, 80], [192, 192], [128, 64], [256, 256]]}
-    },
-    "hhc": {
-        # "timeout": 9000, ??
-        "interval": 10,
-        "threshold": 30,
-        "gain": 2.5,
-        "offset": 105,
-        "trig": 800
-    },
-    "hhc_trig": {
-        "threshold": 400,
-        "scan": 15000,
-        "velThresh": 800
-    }
-}
+    "kick":{"scan":3000, "mask":20000, "decay":130000, "threshold":50, "note":36, "gain":32768, "curve":{"p":[[0,0],[192,192],[128,128],[256,256]]}},
+    "snare":{"scan":3000, "mask":20000, "decay":130000, "threshold":50, "note":38, "gain":32768, "curve":{"p":[[0,0],[192,192],[128,128],[256,256]]}},
+    "hihat":{"scan":3000, "mask":20000, "decay":130000, "threshold":50, "note":26, "gain":32768, "curve":{"p":[[0,0],[192,192],[128,128],[256,256]]}},
+    "crash1":{"scan":3000, "mask":20000, "decay":130000, "threshold":50, "note":49, "gain":32768, "curve":{"p":[[0,0],[192,192],[128,128],[256,256]]}},
+    "tom1":{"scan":3000, "mask":20000, "decay":130000, "threshold":50, "note":50, "gain":32768, "curve":{"p":[[0,0],[192,192],[128,128],[256,256]]}},
+    "tom3":{"scan":3000, "mask":20000, "decay":130000, "threshold":50, "note":41, "gain":32768, "curve":{"p":[[0,0],[192,192],[128,128],[256,256]]}},
+    "ride":{"scan":3000, "mask":20000, "decay":130000, "threshold":50, "note":51, "gain":32768, "curve":{"p":[[0,0],[192,192],[128,128],[256,256]]}},
+    "tom2":{"scan":3000, "mask":20000, "decay":130000, "threshold":1800, "note":47, "gain":32768, "curve":{"p":[[0,0],[192,192],[128,128],[256,256]]}},
+    "crash2":{"scan":3000, "mask":20000, "decay":130000, "threshold":1800, "note":57, "gain":32768, "curve":{"p":[[0,0],[192,192],[128,128],[256,256]]}},
+    "hhc":{"timeout":9000, "threshold":30, "offset":105},
+    "hhc_trig":{"threshold":400, "scan":15000, "vel_thresh":800}}
 
 # Function to be run in the noise logger thread
 def noise_logger():
