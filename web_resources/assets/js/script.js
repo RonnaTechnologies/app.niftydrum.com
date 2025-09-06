@@ -122,6 +122,7 @@ triggerGain.addEventListener('gain', () =>
 triggerThreshold.addEventListener('threshold', () =>
 {
     if (currentSensor === "hhc") return null;
+    parameters.setThreshold(triggerThreshold.threshold);
     fetch(`set/${currentSensor}/threshold/${Math.round(triggerThreshold.threshold)}`);
 });
 
@@ -190,8 +191,9 @@ function updateSensorData()
 
         midiNote.value = note;
         bezierCurve.values = curve.p;
-        triggerGain.threshold = fixedToFloat(gain, 16, 15);;
+        triggerGain.threshold = fixedToFloat(gain, 16, 15);
         triggerThreshold.threshold = Number(threshold);
+        parameters.setThreshold(Number(threshold));
         parameters.setData({
             scan: Number(scan / 1000),
             mask: Number(mask / 1000),

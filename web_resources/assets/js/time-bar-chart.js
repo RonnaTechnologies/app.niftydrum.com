@@ -11,6 +11,8 @@ class TimeBarChart extends HTMLElement {
     this.targetIndex = -1;
     this.startX = 0;
     this.originalWidth = 0;
+    this.decayCurve = document.querySelector('.curve');
+    this.threshold = this.svgHeight;
   }
 
   connectedCallback() {
@@ -28,17 +30,17 @@ class TimeBarChart extends HTMLElement {
       this.svgWidth = this.clientWidth || 600;
     });
 
-    this.debouncedDispatch = debounce(() => {    
-        this.dispatchEvent(new CustomEvent(this._name, {
-          detail: {
-            scan: this.scan,
-            mask: this.mask,
-            decay: this.decay,
-          },
-          bubbles: true,
-          composed: true
-        }));
-      }
+    this.debouncedDispatch = debounce(() => {
+      this.dispatchEvent(new CustomEvent(this._name, {
+        detail: {
+          scan: this.scan,
+          mask: this.mask,
+          decay: this.decay
+        },
+        bubbles: true,
+        composed: true
+      }));
+    }
     );
 
     const groups = Array.from(this.svg.querySelectorAll("g"));
@@ -49,7 +51,8 @@ class TimeBarChart extends HTMLElement {
       const rect = group.querySelector("rect.bar");
       const handle = group.querySelector(".resize-handle");
       const text = group.querySelector("text");
-      const minWidth = input.min || 0;
+
+      const minWidth = parseFloat(input.min) || 0;
       const maxWidth = input.max || this.svgWidth;
 
       const bar = {
@@ -72,8 +75,9 @@ class TimeBarChart extends HTMLElement {
           const maxAllowed = Math.min(bar.maxWidth, this.svgWidth - othersWidth);
           const width = Math.max(bar.minWidth, Math.min(maxAllowed, newWidth));
           rect.setAttribute("width", width);
-          handle.setAttribute("x", width - 5);
+          handle.setAttribute("x", width - 3); // Adjusted for thinner bars
           this.positionBars();
+          this.updateDecayCurve(); // Update decay curve when bar width changes
           this.debouncedDispatch();
           return width;
         },
@@ -85,7 +89,7 @@ class TimeBarChart extends HTMLElement {
         bar.input.addEventListener("input", (e) => {
           const val = parseFloat(e.target.value);
           if (!isNaN(val)) {
-            bar.setWidth(val);            
+            bar.setWidth(val);
             this.debouncedDispatch();
           }
         });
@@ -115,6 +119,7 @@ class TimeBarChart extends HTMLElement {
     });
 
     this.positionBars();
+    this.updateDecayCurve();
     this.setupEvents();
   }
 
@@ -126,9 +131,78 @@ class TimeBarChart extends HTMLElement {
     let currentX = 0;
     this.bars.forEach((bar) => {
       bar.group.setAttribute("transform", `translate(${currentX},0)`);
-      bar.handle.setAttribute("x", bar.getWidth() - 5);
+      bar.handle.setAttribute("x", bar.getWidth() - 3);
       currentX += bar.getWidth();
     });
+  }
+
+  setThreshold(value) {
+    this.threshold = value;
+    this.updateDecayCurve();
+  }
+
+  // Generate exponential decay curve points
+  generateDecayCurve(startX, width, height) {
+    const points = [];
+    const numPoints = Math.max(20, Math.floor(width / 2)); // More points for smoother curve
+
+    for (let i = 0; i <= numPoints; i++) {
+      const x = startX + (i / numPoints) * width;
+      // Exponential decay: y = height * e^(-k*x) where we want it to end at y=0
+      // Using y = height * e^(-5 * (i/numPoints)) to reach near 0 at the end
+      const t = i / numPoints;
+      const y = height * Math.exp(-5 * t);
+      points.push(`${x},${y}`);
+    }
+
+    return points;
+  }
+
+  // Update the decay curve path
+  updateDecayCurve() {
+    if (!this.decayCurve || this.bars.length === 0) return;
+
+    const lastBar = this.bars[this.bars.length - 1];
+    if (!lastBar) return;
+
+    // Calculate starting position of last bar
+    let startX = 0;
+    for (let i = 0; i < this.bars.length - 1; i++) {
+      startX += this.bars[i].getWidth();
+    }
+
+    const width = lastBar.getWidth();
+    const height = this.svgHeight;
+
+    // Generate path data for exponential decay
+    const pathData = this.generateExponentialDecayPath(startX, width, height);
+    this.decayCurve.setAttribute("d", pathData);
+  }
+
+  // Generate SVG path data for exponential decay
+  generateExponentialDecayPath(startX, width) {
+    if (width <= 0) return "";
+
+    const numPoints = Math.max(20, Math.floor(width / 2));
+    let pathData = `M ${startX},${0}`;
+
+    const k = 3; // decay constant
+    const maxThreshold = Number(this.svg.getAttribute('maxThreshold')) || 100;
+    const maxNorm = Number(this.svg.getAttribute('normHeight')) || 2048;
+    const normalizedThreshold = (Math.min(this.threshold, maxThreshold) / maxNorm) * this.svgHeight;
+
+    const effectiveHeight = this.svgHeight - normalizedThreshold;
+    const A = effectiveHeight / (1 - Math.exp(-k));
+
+    for (let i = 1; i <= numPoints; i++) {
+      const t = i / numPoints;
+      const x = startX + t * width;
+      const y = A * (1 - Math.exp(-k * t));
+
+      pathData += ` L ${x},${y}`;
+    }
+
+    return pathData;
   }
 
   setSvgWidth(newWidth) {

@@ -98,7 +98,7 @@
 
       <section style="flex:1">
         Parameters
-        <time-bar-chart maxDuration="400" name="parameters">
+        <time-bar-chart maxDuration="400" normHeight="2048" maxThreshold="100" name="parameters">
           <svg id="timeline"
               viewBox="0 0 400 300"
               preserveAspectRatio="none">
@@ -114,8 +114,9 @@
         
             <g data-name="decay">
               <rect class="bar" x="0" y="0" width="160" height="300" fill="#e0ffe0" />
-              <rect class="resize-handle" x="155" y="0" width="5" height="300" />
+              <rect class="resize-handle" x="155" y="0" width="3" height="300" />
             </g>
+            <path class="curve" fill="none" stroke="#4CAF50" stroke-width="2" />
           </svg>
 
           <div class="grid parameters">
