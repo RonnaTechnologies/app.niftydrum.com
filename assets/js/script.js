@@ -143,16 +143,16 @@ parameters.addEventListener('parameters', (event) =>
     fetch(`set/${currentSensor}/decay/${Math.round(decay * 1000)}`);
 });
 
-hhcInterval.addEventListener('hhc-interval', () =>
+hhcInterval.addEventListener('hhc-timeout', () =>
 {
     if (currentSensor !== "hhc") return null;
-    fetch(`set/${currentSensor}/interval/${hhcInterval.threshold}`);
+    fetch(`set/fsrc/timeout/${Math.round(hhcInterval.threshold)}`);
 });
 
-hhcNoiseThreshold.addEventListener('hhc-noise-threshold', () =>
+hhcNoiseThreshold.addEventListener('hhc-threshold', () =>
 {
     if (currentSensor !== "hhc") return null;
-    fetch(`set/${currentSensor}/threshold/${hhcNoiseThreshold.threshold}`);
+    fetch(`set/fsrc/threshold/${Math.round(hhcNoiseThreshold.threshold)}`);
 });
 
 // hhcGain.addEventListener('hhc-gain', () => {
@@ -163,13 +163,13 @@ hhcNoiseThreshold.addEventListener('hhc-noise-threshold', () =>
 hhcOffset.addEventListener('hhc-offset', () =>
 {
     if (currentSensor !== "hhc") return null;
-    fetch(`set/${currentSensor}/offset/${hhcOffset.threshold}`);
+    fetch(`set/fsrc/offset/${Math.round(hhcOffset.threshold)}`);
 });
 
-hhcTrig.addEventListener('hhc-trig', () =>
+hhcTrig.addEventListener('hhc_trig-threshold', () =>
 {
     if (currentSensor !== "hhc") return null;
-    fetch(`set/${currentSensor}/trig/${hhcTrig.threshold}`);
+    fetch(`set/fsrt/threshold/${Math.round(hhcTrig.threshold)}`);
 });
 // TODO: add other hhc_trig events
 
@@ -184,11 +184,6 @@ function updateSensorData()
         setHhcMode();
         const { offset, threshold, timeout } = data[currentSensor]
         const trig_threshold = data["hhc_trig"]["threshold"]
-
-        console.log(`interval = ${timeout}`)
-        console.log(`threshold = ${threshold}`)
-        console.log(`offset = ${offset}`)
-        console.log(`trig_threshold = ${trig_threshold}`)
 
         hhcInterval.threshold = timeout;
         hhcNoiseThreshold.threshold = threshold;
