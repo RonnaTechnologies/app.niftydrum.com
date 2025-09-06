@@ -31,7 +31,7 @@ class TimeBarChart extends HTMLElement {
     this.resizeObserver = new ResizeObserver(() => {
       this.svgWidth = this.svg.getBoundingClientRect().width;
       if (this.liveValues) {
-        this.setLiveCurve(this.liveValues);  // redraw path with updated width
+        this.setLiveCurve(this.liveValues);
       }
     });
     this.resizeObserver.observe(this.svg);
@@ -81,10 +81,10 @@ class TimeBarChart extends HTMLElement {
           );
           const maxAllowed = Math.min(bar.maxWidth, this.svgWidth - othersWidth);
           const width = Math.max(bar.minWidth, Math.min(maxAllowed, newWidth));
-          rect.setAttribute("width", Math.max(width * xScale, 10));
-          handle.setAttribute("x", width - 3); // Adjusted for thinner bars
+          rect.setAttribute("width",width * xScale);
+          handle.setAttribute("x", width - 3);
           this.positionBars();
-          this.updateDecayCurve(); // Update decay curve when bar width changes
+          this.updateDecayCurve();
           this.debouncedDispatch();
           return width;
         },
@@ -148,15 +148,12 @@ class TimeBarChart extends HTMLElement {
     this.updateDecayCurve();
   }
 
-  // Generate exponential decay curve points
   generateDecayCurve(startX, width, height) {
     const points = [];
-    const numPoints = Math.max(20, Math.floor(width / 2)); // More points for smoother curve
+    const numPoints = Math.max(20, Math.floor(width / 2));
 
     for (let i = 0; i <= numPoints; i++) {
       const x = startX + (i / numPoints) * width;
-      // Exponential decay: y = height * e^(-k*x) where we want it to end at y=0
-      // Using y = height * e^(-5 * (i/numPoints)) to reach near 0 at the end
       const t = i / numPoints;
       const y = height * Math.exp(-5 * t);
       points.push(`${x},${y}`);
@@ -165,14 +162,12 @@ class TimeBarChart extends HTMLElement {
     return points;
   }
 
-  // Update the decay curve path
   updateDecayCurve() {
     if (!this.decayCurve || this.bars.length === 0) return;
 
     const lastBar = this.bars[this.bars.length - 1];
     if (!lastBar) return;
 
-    // Calculate starting position of last bar
     let startX = 0;
     for (let i = 0; i < this.bars.length - 1; i++) {
       startX += this.bars[i].getWidth();
@@ -181,19 +176,17 @@ class TimeBarChart extends HTMLElement {
     const width = lastBar.getWidth();
     const height = this.svgHeight;
 
-    // Generate path data for exponential decay
     const pathData = this.generateExponentialDecayPath(startX, width, height);
     this.decayCurve.setAttribute("d", pathData);
   }
 
-  // Generate SVG path data for exponential decay
   generateExponentialDecayPath(startX, width) {
     if (width <= 0) return "";
 
     const numPoints = Math.max(20, Math.floor(width / 2));
     let pathData = `M ${startX},${0}`;
 
-    const k = 3; // decay constant
+    const k = 3;
     const maxThreshold = Number(this.svg.getAttribute('max-threshold')) || 100;
     const normalizedThreshold = (Math.min(this.threshold, maxThreshold) / this.normHeight) * this.svgHeight;
 
@@ -234,20 +227,23 @@ class TimeBarChart extends HTMLElement {
 
     window.addEventListener("mousemove", (e) => {
       if (this.isResizing) {
+        const bar = this.bars[this.targetIndex];
+        const xScale = Number(bar.group.dataset.scale) || 1;
+    
         const dxPixels = e.clientX - this.startX;
         const ratio = this.svgWidth / this.maxDuration;
+
         const dxLogical = dxPixels / ratio;
-
-        const newWidth = this.originalWidth + dxLogical;
-        const appliedWidth = this.bars[this.targetIndex].setWidth(newWidth);
-
-        const bar = this.bars[this.targetIndex];
+    
+        const newWidth = this.originalWidth / xScale + dxLogical / xScale;
+        const appliedWidth = bar.setWidth(newWidth);
+    
         if (bar.input) {
           bar.input.value = appliedWidth.toFixed(1);
           bar.input.focus();
         }
       }
-    });
+    });       
 
     window.addEventListener("mouseup", () => {
       this.isResizing = false;
@@ -256,11 +252,11 @@ class TimeBarChart extends HTMLElement {
   }
 
   generatePathFromPoints(values) {
-    const stepX =  this.svgWidth / (values.length - 1); // horizontal step between points
+    const stepX =  this.svgWidth / (values.length - 1);
   
     const points = values.map((val, i) => {
       const x = i * stepX;
-      const y = (1 - val / this.normHeight) *  this.svgHeight; // flip y-axis: 0 at bottom, max at top
+      const y = (1 - val / this.normHeight) *  this.svgHeight;
       return [x, y];
     });
   
@@ -274,16 +270,12 @@ class TimeBarChart extends HTMLElement {
   
 
   setLiveCurve(values) {
+    if (!values.length > 0) return;
     this.liveValues = values;
   
     const numPoints = values.length;
-  
-    // Compute effective width proportional to points count
     const effectiveWidth = (numPoints / this.maxDuration) * this.maxDuration;
-  
-    // Starting X (could be 0 or adjusted if you want centered)
     const startX = 0;
-  
     const stepX = effectiveWidth / (numPoints - 1);
   
     const points = values.map((val, i) => {
