@@ -13,22 +13,28 @@ class TimeBarChart extends HTMLElement {
     this.originalWidth = 0;
     this.decayCurve = document.querySelector('.curve');
     this.threshold = this.svgHeight;
+    this.liveCurve = document.querySelector('#live-curve');
+    this.normHeight = Number(this.getAttribute('norm-height')) || 2048;
+    this.liveValues = [];
+    this.maxDuration = parseFloat(this.getAttribute('max-duration')) || 400;
   }
 
   connectedCallback() {
     this.svg = document.getElementById("timeline");
-    this.maxDuration = parseFloat(this.getAttribute('maxDuration')) || 600;
 
     this.svgHeight = this.svg.viewBox.baseVal.height || this.svg.clientHeight || 300;
     this.svg.setAttribute('viewBox', `0 0 ${this.maxDuration} ${this.svgHeight}`);
 
-    this.svgWidth = this.clientWidth || 600;
-    this.svg.style.width = "100%";
+    this.svgWidth = this.svg.getBoundingClientRect().width || 600;
     this.svg.style.height = `${this.svgHeight}px`;
 
     this.resizeObserver = new ResizeObserver(() => {
-      this.svgWidth = this.clientWidth || 600;
+      this.svgWidth = this.svg.getBoundingClientRect().width;
+      if (this.liveValues) {
+        this.setLiveCurve(this.liveValues);  // redraw path with updated width
+      }
     });
+    this.resizeObserver.observe(this.svg);
 
     this.debouncedDispatch = debounce(() => {
       this.dispatchEvent(new CustomEvent(this._name, {
@@ -51,6 +57,7 @@ class TimeBarChart extends HTMLElement {
       const rect = group.querySelector("rect.bar");
       const handle = group.querySelector(".resize-handle");
       const text = group.querySelector("text");
+      const xScale = Number(group.dataset.scale) || 1;
 
       const minWidth = parseFloat(input.min) || 0;
       const maxWidth = input.max || this.svgWidth;
@@ -74,7 +81,7 @@ class TimeBarChart extends HTMLElement {
           );
           const maxAllowed = Math.min(bar.maxWidth, this.svgWidth - othersWidth);
           const width = Math.max(bar.minWidth, Math.min(maxAllowed, newWidth));
-          rect.setAttribute("width", width);
+          rect.setAttribute("width", Math.max(width * xScale, 10));
           handle.setAttribute("x", width - 3); // Adjusted for thinner bars
           this.positionBars();
           this.updateDecayCurve(); // Update decay curve when bar width changes
@@ -187,9 +194,8 @@ class TimeBarChart extends HTMLElement {
     let pathData = `M ${startX},${0}`;
 
     const k = 3; // decay constant
-    const maxThreshold = Number(this.svg.getAttribute('maxThreshold')) || 100;
-    const maxNorm = Number(this.svg.getAttribute('normHeight')) || 2048;
-    const normalizedThreshold = (Math.min(this.threshold, maxThreshold) / maxNorm) * this.svgHeight;
+    const maxThreshold = Number(this.svg.getAttribute('max-threshold')) || 100;
+    const normalizedThreshold = (Math.min(this.threshold, maxThreshold) / this.normHeight) * this.svgHeight;
 
     const effectiveHeight = this.svgHeight - normalizedThreshold;
     const A = effectiveHeight / (1 - Math.exp(-k));
@@ -247,6 +253,51 @@ class TimeBarChart extends HTMLElement {
       this.isResizing = false;
       this.isDraggingThreshold = false;
     });
+  }
+
+  generatePathFromPoints(values) {
+    const stepX =  this.svgWidth / (values.length - 1); // horizontal step between points
+  
+    const points = values.map((val, i) => {
+      const x = i * stepX;
+      const y = (1 - val / this.normHeight) *  this.svgHeight; // flip y-axis: 0 at bottom, max at top
+      return [x, y];
+    });
+  
+    let d = `M ${points[0][0]},${points[0][1]}`;
+    for (let i = 1; i < points.length; i++) {
+      d += ` L ${points[i][0]},${points[i][1]}`;
+    }
+  
+    return d;
+  }
+  
+
+  setLiveCurve(values) {
+    this.liveValues = values;
+  
+    const numPoints = values.length;
+  
+    // Compute effective width proportional to points count
+    const effectiveWidth = (numPoints / this.maxDuration) * this.maxDuration;
+  
+    // Starting X (could be 0 or adjusted if you want centered)
+    const startX = 0;
+  
+    const stepX = effectiveWidth / (numPoints - 1);
+  
+    const points = values.map((val, i) => {
+      const x = startX + i * stepX;
+      const y = this.svgHeight - (val / this.normHeight) * this.svgHeight;
+      return [x, y];
+    });
+  
+    let d = `M ${points[0][0]},${points[0][1]}`;
+    for (let i = 1; i < points.length; i++) {
+      d += ` L ${points[i][0]},${points[i][1]}`;
+    }
+  
+    this.liveCurve.setAttribute("d", d);
   }
 
   setData({ scan, mask, decay }) {

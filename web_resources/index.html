@@ -98,26 +98,29 @@
 
       <section style="flex:1">
         Parameters
-        <time-bar-chart maxDuration="400" normHeight="2048" maxThreshold="100" name="parameters">
-          <svg id="timeline"
-              viewBox="0 0 400 300"
-              preserveAspectRatio="none">
-            <g data-name="scan">
-              <rect class="bar" x="0" y="0" width="80" height="300" fill="#d0eaff" />
-              <rect class="resize-handle" x="75" y="0" width="10" height="300" />
-            </g>
-        
-            <g data-name="mask">
-              <rect class="bar" x="0" y="0" width="100" height="300" fill="#ffe0e0" />
-              <rect class="resize-handle" x="95" y="0" width="10" height="300" />
-            </g>
-        
-            <g data-name="decay">
-              <rect class="bar" x="0" y="0" width="160" height="300" fill="#e0ffe0" />
-              <rect class="resize-handle" x="155" y="0" width="3" height="300" />
-            </g>
-            <path class="curve" fill="none" stroke="#4CAF50" stroke-width="2" />
-          </svg>
+        <time-bar-chart max-duration="400" norm-height="2048" max-threshold="100" name="parameters">
+          <div style="position: relative">
+            <svg id="timeline"
+                viewBox="0 0 400 300"
+                preserveAspectRatio="none">
+              <g data-name="scan" data-scale="2">
+                <rect class="bar" x="0" y="0" width="80" height="300" fill="#d0eaff" />
+                <rect class="resize-handle" x="75" y="0" width="3" height="300" />
+              </g>
+          
+              <g data-name="mask">
+                <rect class="bar" x="0" y="0" width="100" height="300" fill="#ffe0e0" />
+                <rect class="resize-handle" x="95" y="0" width="3" height="300" />
+              </g>
+          
+              <g data-name="decay">
+                <rect class="bar" x="0" y="0" width="160" height="300" fill="#e0ffe0" />
+                <rect class="resize-handle" x="155" y="0" width="3" height="300" />
+              </g>
+              <path class="curve" />
+              <path id="live-curve" />
+            </svg>
+          </div>
 
           <div class="grid parameters">
             <label>

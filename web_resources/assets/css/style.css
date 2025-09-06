@@ -214,6 +214,7 @@ bezier-curve .control-line {
 }
 
 time-bar-chart {
+  position: relative;
   overflow: hidden;
   background-color: var(--pico-form-element-background-color);
   border: var(--border);
@@ -242,14 +243,18 @@ time-bar-chart .resize-handle:hover {
   fill: var(--pico-primary-background);
 }
 
-time-bar-chart #threshold-line {
-  cursor: ns-resize;
-  stroke: var(--pico-secondary);
-  stroke-width: 5;
+time-bar-chart .curve {
+  fill: none;
+  stroke: #4CAF50;
+  stroke-width: 2;
 }
 
-time-bar-chart #threshold-line:hover {
-  stroke: var(--pico-primary-background);
+time-bar-chart #live-curve {
+  display: block;
+  fill: none;
+  stroke: var(--pico-color);
+  stroke-width: 1;
+  opacity: 0.3;
 }
 
 time-bar-chart .parameters {
