@@ -15,11 +15,11 @@ const triggerThreshold = document.querySelector('range-slider[name="threshold"]'
 const parameters = document.querySelector('time-bar-chart');
 
 // HHC settings elements
-const hhcInterval = document.querySelector('range-slider[name="hhc-interval"]');
-const hhcNoiseThreshold = document.querySelector('range-slider[name="hhc-noise-threshold"]');
+const hhcInterval = document.querySelector('range-slider[name="hhc-timeout"]');
+const hhcNoiseThreshold = document.querySelector('range-slider[name="hhc-threshold"]');
 // const hhcGain = document.querySelector('range-slider[name="hhc-gain"]');
 const hhcOffset = document.querySelector('range-slider[name="hhc-offset"]');
-const hhcTrig = document.querySelector('range-slider[name="hhc-trig"]');
+const hhcTrig = document.querySelector('range-slider[name="hhc_trig-threshold"]');
 // TODO: add hhc_trig other element
 
 // Modals elements
@@ -70,10 +70,17 @@ async function init()
 
     ev.onmessage = function (e) 
     {
-        const data = JSON.parse(e.data);
-        if ('value' in data)
+        try
         {
-            triggerThreshold.value = data.value
+            const data = JSON.parse(e.data);
+            if ('value' in data)
+            {
+                triggerThreshold.value = data.value
+            }
+        }
+        catch (err)
+        {
+            console.log('event error: invalid json');
         }
     }
 }
@@ -175,13 +182,15 @@ function updateSensorData()
     if (currentSensor === "hhc")
     {
         setHhcMode();
-        const { interval, threshold, gain, offset, trig } = data[currentSensor]
+        const { offset, threshold, timeout } = data[currentSensor]
+        const trig_threshold = data["hhc_trig"]["threshold"]
 
-        hhcInterval.threshold = interval;
+
+        hhcInterval.threshold = timeout;
         hhcNoiseThreshold.threshold = threshold;
         // hhcGain.threshold = gain;
         hhcOffset.threshold = offset;
-        hhcTrig.threshold = trig;
+        hhcTrig.threshold = trig_threshold;
         return null;
     }
     else
@@ -245,7 +254,8 @@ function toggleSaveModal()
 }
 
 // TODO: live curve test to be removed
-setInterval(() => {
+setInterval(() =>
+{
     const values = Array.from({ length: 400 }, () =>
         Math.floor(Math.random() * 100)
     );

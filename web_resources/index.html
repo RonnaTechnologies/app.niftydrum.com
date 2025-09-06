@@ -1,169 +1,167 @@
 <!doctype html>
 <html lang="en">
 
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="color-scheme" content="light dark">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <!-- <link rel="manifest" href="/site.webmanifest"> -->
-  <link rel="stylesheet" href="/assets/css/pico.pumpkin.min.css">
-  <link rel="stylesheet" href="/assets/css/style.css">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light dark">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <!-- <link rel="manifest" href="/site.webmanifest"> -->
+    <link rel="stylesheet" href="/assets/css/pico.pumpkin.min.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
 
-  <script src="/assets/js/utils.js" defer></script>
-  <script src="/assets/js/bezier-curves.js" defer></script>
-  <script src="/assets/js/range-slider.js" defer></script>
-  <script src="/assets/js/time-bar-chart.js" defer></script>
-  <script src="/assets/js/script.js" defer></script>
-  <script src="/assets/js/firmeware.js" defer></script>
+    <script src="/assets/js/utils.js" defer></script>
+    <script src="/assets/js/bezier-curves.js" defer></script>
+    <script src="/assets/js/range-slider.js" defer></script>
+    <script src="/assets/js/time-bar-chart.js" defer></script>
+    <script src="/assets/js/script.js" defer></script>
+    <!-- <script src="/assets/js/firmeware.js" defer></script> -->
 
-  <title>NiftyDrum App</title>
-</head>
+    <title>NiftyDrum App</title>
+  </head>
 
-<body>
-  <header>
-    <hgroup>
-      <h1>NiftyDrum</h1>
-      <p>by Ronna Technologies</p>
-    </hgroup>
+  <body>
+    <header>
+      <hgroup>
+        <h1>NiftyDrum</h1>
+        <p>by Ronna Technologies</p>
+      </hgroup>
 
-    <button id="about" class="secondary" onclick="toggleAboutModal()">
-      About
-    </button>
+      <button id="about" class="secondary" onclick="toggleAboutModal()">
+        About
+      </button>
 
-    <select name="sensors" id="sensors-select">
-      <option value="kick" selected>Kick</option>
-      <option value="snare">Snare</option>
-      <option value="ride">Ride</option>
-      <option value="crash1">Crash 1</option>
-      <option value="crash2">Crash 2</option>
-      <option value="tom1">Tom 1</option>
-      <option value="tom2">Tom 2</option>
-      <option value="tom3">Tom 3</option>
-      <option value="hihat">Hi-hat</option>
-      <option value="hhc">Hi-hat Controller</option>
-    </select>
+      <select name="sensors" id="sensors-select">
+        <option value="kick" selected>Kick</option>
+        <option value="snare">Snare</option>
+        <option value="ride">Ride</option>
+        <option value="crash1">Crash 1</option>
+        <option value="crash2">Crash 2</option>
+        <option value="tom1">Tom 1</option>
+        <option value="tom2">Tom 2</option>
+        <option value="tom3">Tom 3</option>
+        <option value="hihat">Hi-hat</option>
+        <option value="hhc">Hi-hat Controller</option>
+      </select>
 
-    <div id="save-reset-buttons">
-      <button class="secondary" onclick="toggleResetModal()">Reset</button>
-      <button onclick="toggleSaveModal()">Save</button>
-    </div>
-  </header>
+      <div id="save-reset-buttons">
+        <button class="secondary" onclick="toggleResetModal()">Reset</button>
+        <button onclick="toggleSaveModal()">Save</button>
+      </div>
+    </header>
 
-  <main>
-    <div id="default-mode">
-      <section>
-        Note
-        <input type="number" name="midi-note" min="0" max="256" id="midi-note" value="0">
+    <main>
+      <div id="default-mode">
+        <section>
+          Note
+          <input type="number" name="midi-note" min="0" max="256" id="midi-note" value="0">
 
-        Velocity curve
-        <bezier-curve>
-          <svg id="bezier-svg" viewBox="0 -10 256 276" width="256" height="256">
-            <line id="line-p0-p1" class="control-line" x1="0" y1="128" x2="64" y2="64"></line>
-            <line id="line-p2-p3" class="control-line" x1="192" y1="192" x2="255" y2="128"></line>
+          Velocity curve
+          <bezier-curve>
+            <svg id="bezier-svg" viewBox="0 -10 256 276" width="256" height="256">
+              <line id="line-p0-p1" class="control-line" x1="0" y1="128" x2="64" y2="64"></line>
+              <line id="line-p2-p3" class="control-line" x1="192" y1="192" x2="255" y2="128"></line>
 
-            <path id="bezier-curve-path" d="M 0,128 C 64,64 192,192 255,128" />
+              <path id="bezier-curve-path" d="M 0,128 C 64,64 192,192 255,128" />
 
-            <circle class="bezier-anchor" id="p0" cx="0" cy="128" r="8"></circle>
-            <circle class="bezier-anchor" id="p1" cx="64" cy="64" r="8"></circle>
-            <circle class="bezier-anchor" id="p2" cx="192" cy="192" r="8"></circle>
-            <circle class="bezier-anchor" id="p3" cx="255" cy="128" r="8"></circle>
-          </svg>
-        </bezier-curve>
-      </section>
-
-      <section>
-        Gain
-        <range-slider min="0.1" max="5" name="gain">
-          <div class="slider-container">
-            <div class="marker">
-              <span class="label"></span>
-            </div>
-          </div>
-        </range-slider>
-      </section>
-
-      <section>
-        Threshold
-        <range-slider min="10" max="100" name="threshold">
-          <div class="slider-container">
-            <div class="marker">
-              <span class="label"></span>
-            </div>
-          </div>
-        </range-slider>
-      </section>
-
-      <section style="flex:1">
-        Parameters
-        <time-bar-chart max-duration="400" norm-height="2048" max-threshold="100" name="parameters">
-          <div style="position: relative">
-            <svg id="timeline"
-                viewBox="0 0 400 300"
-                preserveAspectRatio="none">
-              <g data-name="scan" data-scale="4">
-                <rect class="bar" x="0" y="0" width="80" height="300" fill="#d0eaff" />
-                <rect class="resize-handle" x="75" y="0" width="3" height="300" />
-              </g>
-          
-              <g data-name="mask">
-                <rect class="bar" x="0" y="0" width="100" height="300" fill="#ffe0e0" />
-                <rect class="resize-handle" x="95" y="0" width="3" height="300" />
-              </g>
-          
-              <g data-name="decay">
-                <rect class="bar" x="0" y="0" width="160" height="300" fill="#e0ffe0" />
-                <rect class="resize-handle" x="155" y="0" width="3" height="300" />
-              </g>
-              <path class="curve" />
-              <path id="live-curve" />
+              <circle class="bezier-anchor" id="p0" cx="0" cy="128" r="8"></circle>
+              <circle class="bezier-anchor" id="p1" cx="64" cy="64" r="8"></circle>
+              <circle class="bezier-anchor" id="p2" cx="192" cy="192" r="8"></circle>
+              <circle class="bezier-anchor" id="p3" cx="255" cy="128" r="8"></circle>
             </svg>
-          </div>
+          </bezier-curve>
+        </section>
 
-          <div class="grid parameters">
-            <label>
-              <small>Scan (ms)</small>
-              <input type="number" name="scan" id="scan-time" min="2" max="10">
-            </label>
-            <label>
-              <small>Mask (ms)</small>
-              <input type="number" name="mask" id="mask-time" min="10" max="50" >
-            </label>
-            <label>
-              <small>Decay (ms)</small>
-              <input type="number" name="decay" id="decay" min="10" max="300">
-            </label>
-          </div>
-        </time-bar-chart>
-      </section>
-    </div>
-
-    <div id="hhc-mode" disabled>
-      <section>
-        Interval (ms)
-        <range-slider min="5" max="50" name="hhc-interval">
-          <div class="slider-container">
-            <div class="marker">
-              <span class="label"></span>
+        <section>
+          Gain
+          <range-slider min="0.1" max="5" name="gain">
+            <div class="slider-container">
+              <div class="marker">
+                <span class="label"></span>
+              </div>
             </div>
-          </div>
-        </range-slider>
-      </section>
+          </range-slider>
+        </section>
 
-      <section>
-        Noise threshold
-        <range-slider min="10" max="100" name="hhc-noise-threshold">
-          <div class="slider-container">
-            <div class="marker">
-              <span class="label"></span>
+        <section>
+          Threshold
+          <range-slider min="1" max="100" name="threshold">
+            <div class="slider-container">
+              <div class="marker">
+                <span class="label"></span>
+              </div>
             </div>
-          </div>
-        </range-slider>
-      </section>
+          </range-slider>
+        </section>
 
-      <!-- <section>
+        <section style="flex:1">
+          Parameters
+          <time-bar-chart max-duration="400" norm-height="256" max-threshold="100" name="parameters">
+            <div style="position: relative">
+              <svg id="timeline" viewBox="0 0 400 300" preserveAspectRatio="none">
+                <g data-name="scan" data-scale="4">
+                  <rect class="bar" x="0" y="0" width="80" height="300" fill="#d0eaff" />
+                  <rect class="resize-handle" x="75" y="0" width="3" height="300" />
+                </g>
+
+                <g data-name="mask">
+                  <rect class="bar" x="0" y="0" width="100" height="300" fill="#ffe0e0" />
+                  <rect class="resize-handle" x="95" y="0" width="3" height="300" />
+                </g>
+
+                <g data-name="decay">
+                  <rect class="bar" x="0" y="0" width="160" height="300" fill="#e0ffe0" />
+                  <rect class="resize-handle" x="155" y="0" width="3" height="300" />
+                </g>
+                <path class="curve" />
+                <path id="live-curve" />
+              </svg>
+            </div>
+
+            <div class="grid parameters">
+              <label>
+                <small>Scan (ms)</small>
+                <input type="number" name="scan" id="scan-time" min="2" max="10">
+              </label>
+              <label>
+                <small>Mask (ms)</small>
+                <input type="number" name="mask" id="mask-time" min="10" max="50">
+              </label>
+              <label>
+                <small>Decay (ms)</small>
+                <input type="number" name="decay" id="decay" min="10" max="300">
+              </label>
+            </div>
+          </time-bar-chart>
+        </section>
+      </div>
+
+      <div id="hhc-mode" disabled>
+        <section>
+          Interval (µs)
+          <range-slider min="5000" max="50000" name="hhc-timeout">
+            <div class="slider-container">
+              <div class="marker">
+                <span class="label"></span>
+              </div>
+            </div>
+          </range-slider>
+        </section>
+
+        <section>
+          Noise threshold
+          <range-slider min="10" max="100" name="hhc-threshold">
+            <div class="slider-container">
+              <div class="marker">
+                <span class="label"></span>
+              </div>
+            </div>
+          </range-slider>
+        </section>
+
+        <!-- <section>
         Gain
         <range-slider min="0.1" max="5" name="hhc-gain">
           <div class="slider-container">
@@ -174,29 +172,29 @@
         </range-slider>
       </section> -->
 
-      <section>
-        Offset
-        <range-slider min="0" max="64" name="hhc-offset">
-          <div class="slider-container">
-            <div class="marker">
-              <span class="label"></span>
+        <section>
+          Offset
+          <range-slider min="1" max="127" name="hhc-offset">
+            <div class="slider-container">
+              <div class="marker">
+                <span class="label"></span>
+              </div>
             </div>
-          </div>
-        </range-slider>
-      </section>
+          </range-slider>
+        </section>
 
-      <section>
-        Trig
-        <range-slider min="200" max="2000" name="hhc-trig">
-          <div class="slider-container">
-            <div class="marker">
-              <span class="label"></span>
+        <section>
+          Trig
+          <range-slider min="200" max="2000" name="hhc_trig-threshold">
+            <div class="slider-container">
+              <div class="marker">
+                <span class="label"></span>
+              </div>
             </div>
-          </div>
-        </range-slider>
-      </section>
+          </range-slider>
+        </section>
 
-      <!-- <section>
+        <!-- <section>
         Scan time & threshold
         <div class="grid">
           <range-slider min="0" max="64" name="hhc-scan">
@@ -215,58 +213,60 @@
           </range-slider>
         </div>
       </section> -->
-    </div>
-  </main>
+      </div>
+    </main>
 
-  <dialog id="about-modal">
-    <article>
-      <header>
-        <h2>About</h2>
-        <button aria-label="Close" rel="prev" onclick="toggleAboutModal()"></button>
-      </header>
-      <p>
-        <strong>NiftyDrum App</strong> is a <a href="https://ronnatech.com" target="_blank">Ronna Technologies</a> product.
-      </p>
-    </article>
-  </dialog>
+    <dialog id="about-modal">
+      <article>
+        <header>
+          <h2>About</h2>
+          <button aria-label="Close" rel="prev" onclick="toggleAboutModal()"></button>
+        </header>
+        <p>
+          <strong>NiftyDrum App</strong> is a <a href="https://ronnatech.com" target="_blank">Ronna Technologies</a>
+          product.
+        </p>
+      </article>
+    </dialog>
 
-  <dialog id="reset-modal">
-    <article>
-      <header>
-        <h2>Reset settings</h2>
-      </header>
-      <p>
-        This will revert all settings to their last saved state.
-      </p>
-      <footer>
-        <button class="secondary" onclick="toggleResetModal()">
-          Cancel
-        </button>
-        <button onclick="resetSettings()">
-          Confirm
-        </button>
-      </footer>
-    </article>
-  </dialog>
+    <dialog id="reset-modal">
+      <article>
+        <header>
+          <h2>Reset settings</h2>
+        </header>
+        <p>
+          This will revert all settings to their last saved state.
+        </p>
+        <footer>
+          <button class="secondary" onclick="toggleResetModal()">
+            Cancel
+          </button>
+          <button onclick="resetSettings()">
+            Confirm
+          </button>
+        </footer>
+      </article>
+    </dialog>
 
-  <dialog id="save-modal">
-    <article>
-      <header>
-        <h2>Save settings</h2>
-      </header>
-      <p>
-        This will overwrite the last saved configuration with the current settings.
-      </p>
-      <footer>
-        <button class="secondary" onclick="toggleSaveModal()">
-          Cancel
-        </button>
-        <button onclick="saveSettings()">
-          Confirm
-        </button>
-      </footer>
-    </article>
-  </dialog>
+    <dialog id="save-modal">
+      <article>
+        <header>
+          <h2>Save settings</h2>
+        </header>
+        <p>
+          This will overwrite the last saved configuration with the current settings.
+        </p>
+        <footer>
+          <button class="secondary" onclick="toggleSaveModal()">
+            Cancel
+          </button>
+          <button onclick="saveSettings()">
+            Confirm
+          </button>
+        </footer>
+      </article>
+    </dialog>
 
-</body>
+  </body>
+
 </html>
