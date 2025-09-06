@@ -185,6 +185,10 @@ function updateSensorData()
         const { offset, threshold, timeout } = data[currentSensor]
         const trig_threshold = data["hhc_trig"]["threshold"]
 
+        console.log(`interval = ${timeout}`)
+        console.log(`threshold = ${threshold}`)
+        console.log(`offset = ${offset}`)
+        console.log(`trig_threshold = ${trig_threshold}`)
 
         hhcInterval.threshold = timeout;
         hhcNoiseThreshold.threshold = threshold;
