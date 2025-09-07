@@ -27,7 +27,6 @@ const aboutModal = document.querySelector('dialog#about-modal');
 const resetModal = document.querySelector('dialog#reset-modal');
 const saveModal = document.querySelector('dialog#save-modal');
 
-
 function fixedToFloat(rawValue, intBits, fracBits)
 {
     // const totalBits = intBits + fracBits;

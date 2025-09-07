@@ -21,7 +21,7 @@ response_data = [28, 251, 236, 20, 55, 239, 68, 252, 75, 159, 90, 124, 86, 25, 1
 config = {
     "kick":{"scan":3000, "mask":20000, "decay":130000, "threshold":50, "note":36, "gain":2, "curve":{"p":[[0,0],[192,192],[128,128],[256,256]]}},
     "snare":{"scan":3100, "mask":21000, "decay":131000, "threshold":50, "note":38, "gain":3, "curve":{"p":[[0,0],[192,192],[128,128],[256,256]]}},
-    "hihat":{"scan":3200, "mask":22000, "decay":132000, "threshold":50, "note":26, "gain":3, "curve":{"p":[[0,0],[192,192],[128,128],[256,256]]}},
+    "hihat":{"scan":3200, "mask":22000, "decay":132000, "threshold":50, "note":38, "gain":3, "curve":{"p":[[0,0],[192,192],[128,128],[256,256]]}},
     "crash1":{"scan":3300, "mask":23000, "decay":133000, "threshold":50, "note":49, "gain":5, "curve":{"p":[[0,0],[192,192],[128,128],[256,256]]}},
     "tom1":{"scan":3400, "mask":24000, "decay":134000, "threshold":50, "note":50, "gain":2, "curve":{"p":[[0,0],[192,192],[128,128],[256,256]]}},
     "tom3":{"scan":3500, "mask":25000, "decay":135000, "threshold":50, "note":41, "gain":4, "curve":{"p":[[0,0],[192,192],[128,128],[256,256]]}},
@@ -109,10 +109,10 @@ def stop_response_logger():
     stop_response_event.set()
     return jsonify({"status": "stopped"})
 
-# Route to serve files from the web_resources directory
+# Route to serve files directory
 @app.route('/<path:filename>')
 def serve_static(filename):
-    return send_from_directory("web_resources", filename)
+    return send_from_directory(".", filename)
 
 # Other routes remain the same
 @app.route('/select/<int:instrument>', methods=['GET'])
@@ -131,13 +131,21 @@ def get_firmware():
 @app.route('/set/<sensor>/<param>/<value>', methods=['GET'])
 def set_sensor_param(sensor, param, value):
     if sensor in config and param in config[sensor]:
-        # Convert value to the appropriate type
-        if isinstance(config[sensor][param], float):
-            config[sensor][param] = float(value)
-        elif isinstance(config[sensor][param], list):
-            config[sensor][param] = json.loads(value)
-        else:
-            config[sensor][param] = value
+        original_type = type(config[sensor][param])
+        try:
+            if original_type is float:
+                config[sensor][param] = float(value)
+            elif original_type is int:
+                config[sensor][param] = int(value)
+            elif original_type is list:
+                config[sensor][param] = json.loads(value)
+            elif original_type is dict:
+                config[sensor][param] = json.loads(value)
+            else:
+                config[sensor][param] = value
+        except Exception as e:
+            return jsonify({"status": "error", "message": f"Invalid type conversion: {e}"}), 400
+
         return jsonify({"status": "success"})
     else:
         return jsonify({"status": "error", "message": "Sensor or parameter not found"}), 404

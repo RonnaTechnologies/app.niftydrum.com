@@ -24,7 +24,6 @@ class TimeBarChart extends HTMLElement {
 
     this.svgHeight = this.svg.viewBox.baseVal.height || this.svg.clientHeight || 300;
     this.svg.setAttribute('viewBox', `0 0 ${this.maxDuration} ${this.svgHeight}`);
-
     this.svgWidth = this.svg.getBoundingClientRect().width || 600;
     this.svg.style.height = `${this.svgHeight}px`;
 
@@ -46,8 +45,7 @@ class TimeBarChart extends HTMLElement {
         bubbles: true,
         composed: true
       }));
-    }
-    );
+    });
 
     const groups = Array.from(this.svg.querySelectorAll("g"));
 
@@ -81,11 +79,11 @@ class TimeBarChart extends HTMLElement {
           );
           const maxAllowed = Math.min(bar.maxWidth, this.svgWidth - othersWidth);
           const width = Math.max(bar.minWidth, Math.min(maxAllowed, newWidth));
-          rect.setAttribute("width",width * xScale);
+          rect.setAttribute("width", width * xScale);
           handle.setAttribute("x", width - 3);
           this.positionBars();
           this.updateDecayCurve();
-          this.debouncedDispatch();
+          // this.debouncedDispatch();
           return width;
         },
       };
@@ -97,14 +95,18 @@ class TimeBarChart extends HTMLElement {
           const val = parseFloat(e.target.value);
           if (!isNaN(val)) {
             bar.setWidth(val);
-            this.debouncedDispatch();
           }
         });
 
-        bar.input.addEventListener("focus", (e) => {
+        bar.input.addEventListener("change", (e) => {
+          this.debouncedDispatch();
+        });
+
+        bar.input.addEventListener("focus", () => {
           bar.handle.classList.add('active-time-bar');
         });
-        bar.input.addEventListener("blur", (e) => {
+
+        bar.input.addEventListener("blur", () => {
           bar.handle.classList.remove('active-time-bar');
         });
       }
@@ -151,20 +153,17 @@ class TimeBarChart extends HTMLElement {
   generateDecayCurve(startX, width, height) {
     const points = [];
     const numPoints = Math.max(20, Math.floor(width / 2));
-
     for (let i = 0; i <= numPoints; i++) {
       const x = startX + (i / numPoints) * width;
       const t = i / numPoints;
       const y = height * Math.exp(-5 * t);
       points.push(`${x},${y}`);
     }
-
     return points;
   }
 
   updateDecayCurve() {
     if (!this.decayCurve || this.bars.length === 0) return;
-
     const lastBar = this.bars[this.bars.length - 1];
     if (!lastBar) return;
 
@@ -175,21 +174,17 @@ class TimeBarChart extends HTMLElement {
 
     const width = lastBar.getWidth();
     const height = this.svgHeight;
-
     const pathData = this.generateExponentialDecayPath(startX, width, height);
     this.decayCurve.setAttribute("d", pathData);
   }
 
   generateExponentialDecayPath(startX, width) {
     if (width <= 0) return "";
-
     const numPoints = Math.max(20, Math.floor(width / 2));
     let pathData = `M ${startX},${0}`;
-
     const k = 3;
     const maxThreshold = Number(this.svg.getAttribute('max-threshold')) || 100;
     const normalizedThreshold = (Math.min(this.threshold, maxThreshold) / this.normHeight) * this.svgHeight;
-
     const effectiveHeight = this.svgHeight - normalizedThreshold;
     const A = effectiveHeight / (1 - Math.exp(-k));
 
@@ -197,7 +192,6 @@ class TimeBarChart extends HTMLElement {
       const t = i / numPoints;
       const x = startX + t * width;
       const y = A * (1 - Math.exp(-k * t));
-
       pathData += ` L ${x},${y}`;
     }
 
@@ -207,7 +201,6 @@ class TimeBarChart extends HTMLElement {
   setSvgWidth(newWidth) {
     this.svgWidth = newWidth;
     this.svg.setAttribute('width', this.svgWidth);
-
     const viewBoxValues = this.svg.getAttribute('viewBox').split(' ').map(Number);
     viewBoxValues[2] = this.svgWidth;
     this.svg.setAttribute('viewBox', viewBoxValues.join(' '));
@@ -241,9 +234,10 @@ class TimeBarChart extends HTMLElement {
         if (bar.input) {
           bar.input.value = appliedWidth.toFixed(1);
           bar.input.focus();
+          this.debouncedDispatch()
         }
       }
-    });       
+    });
 
     window.addEventListener("mouseup", () => {
       this.isResizing = false;
