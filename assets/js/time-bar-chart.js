@@ -287,10 +287,19 @@ class TimeBarChart extends HTMLElement {
     this.liveCurve.setAttribute("d", d);
   }
 
-  setData({ scan, mask, decay }) {
-    this.scan = scan;
-    this.mask = mask;
-    this.decay = decay;
+  setData(data) {
+    setTimeout(() => {
+      this.bars.forEach(bar => {
+        if (data.hasOwnProperty(bar.name)) {
+          const value = data[bar.name];
+          bar.setWidth(value);
+  
+          if (bar.input) {
+            bar.input.value = value.toFixed(1);
+          }
+        }
+      });
+    }, 0);
   }
 }
 
