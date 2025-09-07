@@ -4,6 +4,7 @@ class RangeSlider extends HTMLElement
     {
         super();
         this._name = this.getAttribute('name');
+        this._displayInt = this.hasAttribute('integer');
         this._value = 0;
         this._max = parseFloat(this.getAttribute('max')) || 1;
         this._min = parseFloat(this.getAttribute('min')) || 0;
@@ -55,7 +56,7 @@ class RangeSlider extends HTMLElement
     {
         this._marker = this._clampToMax(val);
         this.updateMarker();
-        this.updatelabel();
+        this.updateLabel();
     }
 
     get threshold()
@@ -90,11 +91,12 @@ class RangeSlider extends HTMLElement
         this.marker.style.transform = `translateY(${translateY}px)`;
     }
 
-    updatelabel()
+    updateLabel()
     {
         if (this.label)
         {
-            this.label.textContent = Number(this._marker.toFixed(2)).toString();
+            const value = this._displayInt ? Math.round(this._marker) : Number(this._marker.toFixed(2));
+            this.label.textContent = value.toString();
         }
     }
 

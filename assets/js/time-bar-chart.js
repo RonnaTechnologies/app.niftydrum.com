@@ -299,7 +299,7 @@ class TimeBarChart extends HTMLElement {
           }
         }
       });
-    }, 0);
+    }, 20);
   }
 }
 
