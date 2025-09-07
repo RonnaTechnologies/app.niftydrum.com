@@ -36,12 +36,13 @@ class TimeBarChart extends HTMLElement {
     this.resizeObserver.observe(this.svg);
 
     this.debouncedDispatch = debounce(() => {
+      const detail = this.bars.reduce((acc, bar) => {
+        acc[bar.name] = bar.getWidth() / bar.xScale;
+        return acc;
+      }, {});
+    
       this.dispatchEvent(new CustomEvent(this._name, {
-        detail: {
-          scan: this.scan,
-          mask: this.mask,
-          decay: this.decay
-        },
+        detail,
         bubbles: true,
         composed: true
       }));
@@ -69,6 +70,7 @@ class TimeBarChart extends HTMLElement {
         minWidth,
         maxWidth,
         input,
+        xScale,
 
         getWidth: () => parseFloat(rect.getAttribute("width")),
 
@@ -83,7 +85,6 @@ class TimeBarChart extends HTMLElement {
           handle.setAttribute("x", width - 3);
           this.positionBars();
           this.updateDecayCurve();
-          // this.debouncedDispatch();
           return width;
         },
       };
@@ -98,7 +99,7 @@ class TimeBarChart extends HTMLElement {
           }
         });
 
-        bar.input.addEventListener("change", (e) => {
+        bar.input.addEventListener("change", () => {
           this.debouncedDispatch();
         });
 
