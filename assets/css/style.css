@@ -32,6 +32,14 @@ html {
   margin: 0;
   color: var(--pico-color);
   background-color: var(--pico-background-color);
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                 supported by Chrome, Edge, Opera and Firefox */
+
 }
 
 body {
@@ -41,6 +49,7 @@ body {
   padding: 1rem;
   max-width: 1280px;
   margin-inline: auto;
+  cursor: default;
 }
 
 html[data-theme="dark"] nav img {
