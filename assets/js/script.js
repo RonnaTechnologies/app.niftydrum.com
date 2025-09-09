@@ -90,6 +90,15 @@ init();
 sensorsSelect.addEventListener("change", (e) =>
 {
     currentSensor = e.target.value;
+
+    const sensor_map = {
+        "kick": 0, "snare": 1, "hihat": 2, "crash1": 4, "tom1": 5, "tom3": 6,
+        "ride": 7, "tom2": 8, "crash2": 9
+    };
+
+    fetch(`/select/${sensor_map[currentSensor]}`)
+
+    console.log(currentSensor)
     getConfig();
 });
 
