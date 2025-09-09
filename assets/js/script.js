@@ -24,7 +24,6 @@ const hhcTrig = document.querySelector('range-slider[name="hhc_trig-threshold"]'
 
 // Modals elements
 const aboutModal = document.querySelector('dialog#about-modal');
-const resetModal = document.querySelector('dialog#reset-modal');
 const saveModal = document.querySelector('dialog#save-modal');
 
 function fixedToFloat(rawValue, intBits, fracBits)
@@ -231,17 +230,12 @@ function setHhcMode()
     hhcContainer.toggleAttribute('disabled', false);
 }
 
-function resetSettings()
-{
-    console.log("Reset settings");
-    // TODO: Fetch old config
-    toggleResetModal();
-}
+
 
 function saveSettings()
 {
     console.log("Save settings");
-    // TODO: Post new config
+    //fetch("/save_params_all")
     toggleSaveModal();
 }
 
@@ -250,10 +244,6 @@ function toggleAboutModal()
     aboutModal.toggleAttribute('open');
 }
 
-function toggleResetModal()
-{
-    resetModal.toggleAttribute('open');
-}
 
 function toggleSaveModal()
 {
