@@ -50,6 +50,7 @@ body {
   max-width: 1280px;
   margin-inline: auto;
   cursor: default;
+  overflow: hidden;
 }
 
 html[data-theme="dark"] nav img {

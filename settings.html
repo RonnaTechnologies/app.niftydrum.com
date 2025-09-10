@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="color-scheme" content="light dark">
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+        <!-- <link rel="manifest" href="/site.webmanifest"> -->
+        <link rel="stylesheet" href="/assets/css/pico.pumpkin.min.css">
+        <link rel="stylesheet" href="/assets/css/style.css">
+
+        <script src="/assets/js/utils.js" defer></script>
+
+        <script defer>
+
+            function toggleAboutModal()
+            {
+                const aboutModal = document.querySelector('dialog#about-modal');
+                aboutModal.toggleAttribute('open');
+            }
+
+            async function upload_firmware()
+            {
+                document.getElementById('fw_upload_button').ariaBusy = true
+                const firmware_file = document.getElementById("firmware_file").files[0]
+                const formData = new FormData();
+
+                formData.append('firmware_file', firmware_file);
+
+                const resp = await fetch('/firmware', { // Your POST endpoint
+                    method: 'POST',
+                    body: formData // This is your file object
+                })
+                const j = await resp.json() // if the response is a JSON object
+                console.log(j)
+
+                document.getElementById('fw_upload_button').ariaBusy = false
+
+            }
+
+        </script>
+        <!-- <script src="/assets/js/firmware.js" defer></script> -->
+
+        <title>NiftyDrum App</title>
+    </head>
+
+    <body>
+        <header>
+            <hgroup>
+                <h1>NiftyDrum</h1>
+                <p>by Ronna Technologies</p>
+            </hgroup>
+
+            <button data-tooltip="About NiftyDrum" id="about" class="secondary" onclick="toggleAboutModal()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" style="width: 1.5rem; height: 1.5rem; display: inline-block;">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+                </svg>
+            </button>
+            <div style="text-align: center; margin: 0 auto; width: fit-content; padding-top: .75em;">
+                <h1>Advanced settings</h1>
+            </div>
+            <button class="primary" onclick="window.location.href='/'">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="size-6" style="width: 1.5rem; height: 1.5rem; display: inline-block;">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3" />
+                </svg>
+            </button>
+
+        </header>
+
+        <main>
+            <article>
+                <h2>Firmware</h2>
+                <div class="container" role="group">
+                    <input type="file" class="input-file" id="firmware_file" />
+                    <button id="fw_upload_button" class="secondary outline" onclick="upload_firmware()">upload</button>
+                </div>
+            </article>
+        </main>
+        <dialog id="about-modal">
+            <article>
+                <header>
+                    <h2>About</h2>
+                    <button aria-label="Close" rel="prev" onclick="toggleAboutModal()"></button>
+                </header>
+                <p>
+                    <strong>NiftyDrum</strong> is a <a data-tooltip="https://ronnatech.com" href="https://ronnatech.com"
+                        target="_blank">Ronna Technologies</a>
+                    product.
+                </p>
+            </article>
+        </dialog>
+    </body>
+
+</html>
