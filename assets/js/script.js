@@ -64,23 +64,6 @@ async function init()
     const _ = await fetch('/stop_noise_logger');
     const __ = await fetch('/start_noise_logger');
 
-    const ev = new EventSource("event")
-
-    ev.onmessage = function (e) 
-    {
-        try
-        {
-            const data = JSON.parse(e.data);
-            if ('value' in data)
-            {
-                triggerThreshold.value = data.value
-            }
-        }
-        catch (err)
-        {
-            console.log('event error: invalid json');
-        }
-    }
 }
 
 init();
