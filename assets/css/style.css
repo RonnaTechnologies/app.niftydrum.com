@@ -255,16 +255,16 @@ time-bar-chart .resize-handle:hover {
 
 time-bar-chart .curve {
   fill: none;
-  stroke: #4CAF50;
+  stroke: var(--pico-form-element-invalid-active-border-color);
   stroke-width: 2;
 }
 
 time-bar-chart #live-curve {
   display: block;
   fill: none;
-  stroke: var(--pico-color);
+  stroke: var(--pico-primary);
   stroke-width: 1;
-  opacity: 0.3;
+  opacity: 0.75;
 }
 
 time-bar-chart .parameters {

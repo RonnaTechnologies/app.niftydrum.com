@@ -5,7 +5,7 @@ class RangeSlider extends HTMLElement
         super();
         this._name = this.getAttribute('name');
         this._displayInt = this.hasAttribute('integer');
-        this._value = 0;
+        this._value = 0.1;
         this._max = parseFloat(this.getAttribute('max')) || 1;
         this._min = parseFloat(this.getAttribute('min')) || 0;
         this._marker = this._min || 0;
@@ -22,6 +22,7 @@ class RangeSlider extends HTMLElement
                 composed: true
             }));
         });
+
     }
 
     connectedCallback()

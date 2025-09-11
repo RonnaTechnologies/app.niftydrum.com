@@ -25,7 +25,7 @@ ev.onmessage = function (e)
             else
             {
                 // TODO(): handle disconnection correctly
-                //document.getElementById("disconnected").toggleAttribute("open", event === "disconnect")
+                document.getElementById("disconnected").toggleAttribute("open", event === "disconnect")
             }
         }
 
