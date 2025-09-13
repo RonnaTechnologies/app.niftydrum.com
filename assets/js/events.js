@@ -1,5 +1,6 @@
 
 const ev = new EventSource("event")
+let fw_upload = false
 
 ev.onmessage = function (e) 
 {
@@ -13,6 +14,7 @@ ev.onmessage = function (e)
 
             if (event.startsWith("firmware_upload_"))
             {
+                fw_upload = true
                 if ('value' in data)
                 {
                     document.getElementById("firmware-progress").value = data.value
@@ -21,8 +23,13 @@ ev.onmessage = function (e)
                 {
                     document.getElementById("firmware-modal").toggleAttribute('open', event === "firmware_upload_begin")
                 }
+
+                if (event === "firmware_upload_end")
+                {
+                    fw_upload = false
+                }
             }
-            else
+            else if (!fw_upload)
             {
                 // TODO(): handle disconnection correctly
                 document.getElementById("disconnected").toggleAttribute("open", event === "disconnect")

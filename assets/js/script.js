@@ -84,13 +84,13 @@ sensorsSelect.addEventListener("change", async (e) =>
     await getConfig();
 });
 
-midiNote.addEventListener('change', () =>
+midiNote.addEventListener('change', async () =>
 {
     if (currentSensor === "hhc") return null;
-    fetch(`set/${currentSensor}/note/${Number(midiNote.value)}`);
+    await fetch(`set/${currentSensor}/note/${Number(midiNote.value)}`);
 });
 
-bezierCurve.addEventListener('curve', (e) =>
+bezierCurve.addEventListener('curve', async (e) =>
 {
     if (currentSensor === "hhc") return null;
 
@@ -104,7 +104,7 @@ bezierCurve.addEventListener('curve', (e) =>
     const formData = new FormData();
     formData.append('file', blob, 'json_curve');
 
-    fetch('/curve', {
+    await fetch('/curve', {
         method: 'POST',
         body: formData,
     });
@@ -133,16 +133,16 @@ parameters.addEventListener('parameters', async (event) =>
     await fetch(`set/${currentSensor}/decay/${Math.round(decay * 1000)}`);
 });
 
-hhcInterval.addEventListener('hhc-timeout', () =>
+hhcInterval.addEventListener('hhc-timeout', async () =>
 {
     if (currentSensor !== "hhc") return null;
-    fetch(`set/fsrc/timeout/${Math.round(hhcInterval.threshold)}`);
+    await fetch(`set/fsrc/timeout/${Math.round(hhcInterval.threshold)}`);
 });
 
-hhcNoiseThreshold.addEventListener('hhc-threshold', () =>
+hhcNoiseThreshold.addEventListener('hhc-threshold', async () =>
 {
     if (currentSensor !== "hhc") return null;
-    fetch(`set/fsrc/threshold/${Math.round(hhcNoiseThreshold.threshold)}`);
+    await fetch(`set/fsrc/threshold/${Math.round(hhcNoiseThreshold.threshold)}`);
 });
 
 // hhcGain.addEventListener('hhc-gain', () => {
@@ -150,16 +150,16 @@ hhcNoiseThreshold.addEventListener('hhc-threshold', () =>
 //     fetch(`set/${"currentSensor"}/gain/${hhcGain.threshold}`);
 // });
 
-hhcOffset.addEventListener('hhc-offset', () =>
+hhcOffset.addEventListener('hhc-offset', async () =>
 {
     if (currentSensor !== "hhc") return null;
-    fetch(`set/fsrc/offset/${Math.round(hhcOffset.threshold)}`);
+    await fetch(`set/fsrc/offset/${Math.round(hhcOffset.threshold)}`);
 });
 
-hhcTrig.addEventListener('hhc_trig-threshold', () =>
+hhcTrig.addEventListener('hhc_trig-threshold', async () =>
 {
     if (currentSensor !== "hhc") return null;
-    fetch(`set/fsrt/threshold/${Math.round(hhcTrig.threshold)}`);
+    await fetch(`set/fsrt/threshold/${Math.round(hhcTrig.threshold)}`);
 });
 // TODO: add other hhc_trig events
 
