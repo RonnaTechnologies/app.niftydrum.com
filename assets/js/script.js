@@ -69,7 +69,7 @@ async function init()
 init();
 
 // Events handling
-sensorsSelect.addEventListener("change", (e) =>
+sensorsSelect.addEventListener("change", async (e) =>
 {
     currentSensor = e.target.value;
 
@@ -78,10 +78,10 @@ sensorsSelect.addEventListener("change", (e) =>
         "ride": 7, "tom2": 8, "crash2": 9
     };
 
-    fetch(`/select/${sensor_map[currentSensor]}`)
+    await fetch(`/select/${sensor_map[currentSensor]}`)
 
     console.log(currentSensor)
-    getConfig();
+    await getConfig();
 });
 
 midiNote.addEventListener('change', () =>
@@ -110,27 +110,27 @@ bezierCurve.addEventListener('curve', (e) =>
     });
 });
 
-triggerGain.addEventListener('gain', () =>
+triggerGain.addEventListener('gain', async () =>
 {
     if (currentSensor === "hhc") return null;
-    fetch(`set/${currentSensor}/gain/${triggerGain.threshold.toFixed(2)}`);
+    await fetch(`set/${currentSensor}/gain/${triggerGain.threshold.toFixed(2)}`);
 });
 
-triggerThreshold.addEventListener('threshold', () =>
+triggerThreshold.addEventListener('threshold', async () =>
 {
     if (currentSensor === "hhc") return null;
     parameters.setThreshold(triggerThreshold.threshold);
-    fetch(`set/${currentSensor}/threshold/${Math.round(triggerThreshold.threshold)}`);
+    await fetch(`set/${currentSensor}/threshold/${Math.round(triggerThreshold.threshold)}`);
 });
 
-parameters.addEventListener('parameters', (event) =>
+parameters.addEventListener('parameters', async (event) =>
 {
     if (currentSensor === "hhc") return null;
     const { scan, mask, decay } = event.detail;
 
-    fetch(`set/${currentSensor}/scan/${Math.round(scan * 1000)}`);
-    fetch(`set/${currentSensor}/mask/${Math.round(mask * 1000)}`);
-    fetch(`set/${currentSensor}/decay/${Math.round(decay * 1000)}`);
+    await fetch(`set/${currentSensor}/scan/${Math.round(scan * 1000)}`);
+    await fetch(`set/${currentSensor}/mask/${Math.round(mask * 1000)}`);
+    await fetch(`set/${currentSensor}/decay/${Math.round(decay * 1000)}`);
 });
 
 hhcInterval.addEventListener('hhc-timeout', () =>
