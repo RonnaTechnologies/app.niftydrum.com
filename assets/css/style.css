@@ -1,37 +1,329 @@
+:root {
+  --size-control-width: 30px;
+  --radius-full: 999px;
+  --padding-default: 1rem;
+
+  /* Typography */
+  --font-family-base: sans-serif;
+  --font-size-sm: 0.8em;
+
+  /* Cursor */
+  --cursor-default: grab;
+  --cursor-active: grabbing;
+
+  /* Transition */
+  --transition-default: 0.15s ease;
+
+  /* Stroke / Dash */
+  --stroke-width-primary: 2;
+  --stroke-width-secondary: 1;
+  --stroke-dash-pattern: 4 2;
+  --border: var(--pico-border-width) solid var(--pico-form-element-border-color);
+}
+
 * {
-    scroll-margin-block-start: 0.75em;
+  scroll-margin-block-start: 0.75em;
+  box-sizing: border-box;
+  margin-block-end: 0 !important;
+}
+
+html {
+  padding: 0;
+  margin: 0;
+  color: var(--pico-color);
+  background-color: var(--pico-background-color);
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                 supported by Chrome, Edge, Opera and Firefox */
+
 }
 
 body {
-    width: min(80ch, 100% - 2rem) !important;
+  width: 100%;
+  height: 100%;
+  font-family: var(--font-family-base);
+  padding: 1rem;
+  max-width: 1280px;
+  margin-inline: auto;
+  cursor: default;
+  overflow: hidden;
 }
-
-details > * {
-    text-align: left;
-}
-
-summary {
-    cursor: pointer;
-    padding-block: 0.75em;
-}
-
-form .grid.middle {
-    align-items: center;
-}
-
-
-a:focus {
-    outline: unset;
-}
-
-/* Themes */
 
 html[data-theme="dark"] nav img {
-    filter: invert(100%);
+  filter: invert(100%);
 }
 
 @media (prefers-color-scheme: dark) {
-    nav img {
-        filter: invert(100%);
-    }
+  nav img {
+    filter: invert(100%);
   }
+}
+
+[disabled] {
+  display: none !important;
+}
+
+h2 {
+  --pico-font-size: 1.25rem;
+}
+
+header {
+  display: grid;
+  grid-template-areas:
+    "logo about select actions";
+  grid-template-columns: auto auto 1fr auto;
+  gap: 1rem;
+}
+
+hgroup {
+  grid-area: logo;
+}
+
+#about {
+  grid-area: about;
+}
+
+#sensors-select {
+  grid-area: select;
+}
+
+#save-reset-buttons {
+  grid-area: actions;
+  display: flex;
+  align-items: stretch;
+  gap: 1rem;
+}
+
+#save-reset-buttons button {
+  width: 100%;
+}
+
+div[id$="-mode"] {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 3rem;
+}
+
+section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+range-slider {
+  position: relative;
+  width: var(--size-control-width);
+  height: 100%;
+  min-height: 200px;
+  background-color: var(--pico-form-element-background-color);
+  border: var(--border);
+  border-radius: var(--radius-full);
+}
+
+range-slider:before, range-slider:after {
+  position: absolute;
+  font-size: var(--font-size-sm);
+  left: calc(var(--size-control-width) + 2px);
+  width: max-content;
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+}
+
+range-slider:before {
+  content: attr(min);
+  bottom: calc(var(--size-control-width) / 2 - 1px);
+  transform: translateY(50%);
+}
+
+range-slider:after {
+  content: attr(max);
+  top: calc(var(--size-control-width) / 2 - 1px);
+  transform: translateY(-50%);
+}
+
+range-slider .slider-container {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: linear-gradient(to top, var(--pico-form-element-border-color) 0%, transparent 0%);
+}
+
+range-slider .marker {
+  position: absolute;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--pico-switch-background-color);
+  border: var(--pico-border-width) solid var(--pico-secondary);
+  border-radius: 50%;
+  cursor: var(--cursor-default);
+  transform: translateY(0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition-default);
+  z-index: 2;
+}
+
+range-slider .marker:hover {
+  background-color: var(--pico-primary-background);
+}
+
+range-slider .label {
+  position: absolute;
+  font-size: var(--font-size-sm);
+  background-color: var(--pico-background-color);
+  white-space: nowrap;
+  user-select: none;
+  pointer-events: none;
+  top: 50%;
+  left: calc(var(--size-control-width) + 1px);
+  transform: translateY(-50%);
+}
+
+bezier-curve {
+  display: grid;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background-color: var(--pico-form-element-background-color);
+  border: var(--border);
+  border-radius: var(--pico-border-radius);
+}
+
+bezier-curve svg {
+  width: 100%;
+}
+
+bezier-curve .bezier-anchor {
+  fill: var(--pico-switch-background-color);
+  stroke: var(--pico-secondary);
+  stroke-width: 1;
+  cursor: pointer;
+  transition: fill var(--transition-default);
+}
+
+bezier-curve .bezier-anchor:hover {
+  fill: var(--pico-primary-background);
+}
+
+bezier-curve path {
+  fill: none;
+  stroke: var(--pico-secondary);
+  stroke-width: var(--stroke-width-primary);
+}
+
+bezier-curve .control-line {
+  stroke: var(--pico-secondary);
+  stroke-width: var(--stroke-width-secondary);
+  stroke-dasharray: var(--stroke-dash-pattern);
+}
+
+time-bar-chart {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--pico-form-element-background-color);
+  border: var(--border);
+  border-radius: var(--pico-border-radius);
+  width: 100%;
+  min-width: 400px;
+}
+
+time-bar-chart svg text {
+  user-select: none;
+  pointer-events: none;
+}
+
+time-bar-chart #timeline {
+  display: block;
+  width: 100%;
+}
+
+time-bar-chart .resize-handle {
+  fill: var(--pico-secondary);
+  pointer-events: all;
+  cursor: ew-resize;
+}
+
+time-bar-chart .resize-handle:hover {
+  fill: var(--pico-primary-background);
+}
+
+time-bar-chart .curve {
+  fill: none;
+  stroke: var(--pico-form-element-invalid-active-border-color);
+  stroke-width: 2;
+}
+
+time-bar-chart #live-curve {
+  display: block;
+  fill: none;
+  stroke: var(--pico-primary);
+  stroke-width: 1;
+  opacity: 0.75;
+}
+
+time-bar-chart .parameters {
+  padding: 0.5rem;
+}
+
+.active-time-bar {
+  stroke: var(--pico-primary-background) !important;
+  fill: var(--pico-primary-background) !important;
+}
+
+dialog:has(footer) article {
+  padding-block-end: 0;
+}
+
+dialog article header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-block-end: 1rem !important;
+}
+
+dialog footer {
+  display: flex;
+  justify-content: space-between;
+}
+
+@media (width <= 768px) {
+  body {
+    padding-block-end: 4rem;
+  }
+
+  header {
+    grid-template-areas:
+      "logo about select";
+    grid-template-columns: auto auto 1fr;
+  }
+
+  #save-reset-buttons {
+    position: fixed;
+    padding: 0.5rem;
+    background-color: var(--pico-background-color);
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    z-index: 10;
+  }
+
+  time-bar-chart {
+    min-width: 90vw;
+  }
+}
+
+@media (width <= 576px) {
+  header {
+    grid-template-areas:
+    "logo about"
+    "select select";
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
+  }
+}

@@ -1,6 +1,34 @@
+// Navigation elements
+const sensorsSelect = document.querySelector("#sensors-select");
+const defaultContainer = document.querySelector('#default-mode');
+const hhcContainer = document.querySelector('#hhc-mode');
+
+// State variables
+let currentSensor = sensorsSelect.value;
+let data = null;
+
+// Settings elements
+const midiNote = document.querySelector('#midi-note');
+const bezierCurve = document.querySelector('bezier-curve');
+const triggerGain = document.querySelector('range-slider[name="gain"]');
+const triggerThreshold = document.querySelector('range-slider[name="threshold"]');
+const parameters = document.querySelector('time-bar-chart');
+
+// HHC settings elements
+const hhcInterval = document.querySelector('range-slider[name="hhc-timeout"]');
+const hhcNoiseThreshold = document.querySelector('range-slider[name="hhc-threshold"]');
+// const hhcGain = document.querySelector('range-slider[name="hhc-gain"]');
+const hhcOffset = document.querySelector('range-slider[name="hhc-offset"]');
+const hhcTrig = document.querySelector('range-slider[name="hhc_trig-threshold"]');
+// TODO: add hhc_trig other element
+
+// Modals elements
+const aboutModal = document.querySelector('dialog#about-modal');
+const saveModal = document.querySelector('dialog#save-modal');
+
 function fixedToFloat(rawValue, intBits, fracBits)
 {
-    const totalBits = intBits + fracBits;
+    // const totalBits = intBits + fracBits;
     // const maxValue = Math.pow(2, totalBits);
 
     // Ensure the raw value is within the valid range
@@ -21,114 +49,200 @@ function fixedToFloat(rawValue, intBits, fracBits)
     return floatValue.toFixed(2);
 }
 
-let data = {}
-
-const make_proxy = (obj) =>
+// Init
+function getConfig()
 {
-    // Check if the input is an object and not null
-    if (obj !== null && typeof obj === 'object')
-    {
-        // If it's an array, map over its elements and apply make_proxy
-        if (Array.isArray(obj))
+    fetch('/get_all')
+        .then(resp => { return resp.json() })
+        .then(value =>
         {
-            return obj.map(make_proxy)
-        }
-
-        // Create a Proxy for the object
-        return new Proxy(obj, {
-            async set(target, prop, value)
-            {
-                // If the value is an object or an array, recursively wrap it in a Proxy
-                if (value !== null && typeof value === 'object')
-                {
-                    value = make_proxy(value)
-                }
-                target[prop] = value
-                try
-                {
-                    const resp = await fetch(`./set/${target.name}/${prop}/${value}`)
-                    const ret = await resp.text()
-                    console.log(`ret = ${ret}`)
-
-                } catch (err)
-                {
-                    //alert(err);
-                }
-                return true
-            },
-            get(target, prop)
-            {
-                // If the property is an object or an array, wrap it in a Proxy
-                const value = target[prop]
-                if (value !== null && typeof value === 'object')
-                {
-                    value["name"] = prop
-                    return make_proxy(value)
-                }
-                return value
-            }
+            data = value
+            updateSensorData()
         })
-    }
-    return obj // Return the original value if it's not an object or array
+        .catch(error => console.log(`error: ${error}`))
 }
 
 
-const update_form = d =>
+async function init()
 {
-    Object.keys(d).forEach(item =>
-    {
-        Object.entries(d[item]).forEach(([setting, value]) =>
-        {
-            const slider = document.querySelector(`#${item} + div > kiwi-slider[id*="${setting.split('_')[0]}"]`);
-            const note = document.querySelector(`#${item} + div > label[id*="${setting.split('_')[0]}"] input`);
-
-            slider && slider?.setAttribute('default', value);
-            note && note?.setAttribute('value', value);
-        });
-    });
+    await fetch('/stop_noise_logger')
+    await fetch('/start_noise_logger')
+    getConfig()
 }
 
-// get all
-const get_all = () =>
+setTimeout(init, 250) // wait for server to start
+
+// Events handling
+sensorsSelect.addEventListener("change", async (e) =>
 {
-    fetch("/get_all")
-        .then(r => r.json()).then(d =>
-        {
-            console.log(d)
-            data = make_proxy(d)
-            update_form(data)
-        })
-}
+    currentSensor = e.target.value;
 
-const update_param = (pad, param, value) =>
-{
-    data[pad][param] = value
-}
+    const sensor_map = {
+        "kick": 0, "snare": 1, "hihat": 2, "crash1": 4, "tom1": 5, "tom3": 6,
+        "ride": 7, "tom2": 8, "crash2": 9
+    };
 
-function updatePadsValue(data)
-{
-    Object.keys(data.instruments).forEach(item =>
-    {
-        Object.entries(data.instruments[item]).forEach(([setting, value]) =>
-        {
-            const slider = document.querySelector(`#${item} + div > kiwi-slider[id*="${setting.split('_')[0]}"]`);
-            const note = document.querySelector(`#${item} + div > label[id*="${setting.split('_')[0]}"] input`);
+    await fetch(`/select/${sensor_map[currentSensor]}`)
 
-            slider && slider?.setAttribute('default', value);
-            note && note?.setAttribute('value', value);
-        });
-    });
-};
-
-window.addEventListener('click', (event) =>
-{
-    const element = event.target;
-
-    if (element.closest('[id="about-modal"]') || element.closest('[data-target="about-modal"]'))
-    {
-        element.nodeName === 'BUTTON' || element.nodeName === 'DIALOG' ?
-            document.querySelector('#about-modal').toggleAttribute('open') : null;
-    }
+    console.log(currentSensor)
+    getConfig()
 });
 
-get_all()
+midiNote.addEventListener('change', async () =>
+{
+    if (currentSensor === "hhc") return null;
+    await fetch(`set/${currentSensor}/note/${Number(midiNote.value)}`);
+});
+
+bezierCurve.addEventListener('curve', async (e) =>
+{
+    if (currentSensor === "hhc") return null;
+
+    const curveData = e.detail.curve.map(subArray =>
+        subArray.map(num => parseInt(num, 10))
+    );
+
+    const jsonStr = JSON.stringify({ p: curveData });
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+
+    const formData = new FormData();
+    formData.append('file', blob, 'json_curve');
+
+    await fetch('/curve', {
+        method: 'POST',
+        body: formData,
+    });
+});
+
+triggerGain.addEventListener('gain', async () =>
+{
+    if (currentSensor === "hhc") return null;
+    await fetch(`set/${currentSensor}/gain/${triggerGain.threshold.toFixed(2)}`);
+});
+
+triggerThreshold.addEventListener('threshold', async () =>
+{
+    if (currentSensor === "hhc") return null;
+    parameters.setThreshold(triggerThreshold.threshold);
+    await fetch(`set/${currentSensor}/threshold/${Math.round(triggerThreshold.threshold)}`);
+});
+
+parameters.addEventListener('parameters', async (event) =>
+{
+    if (currentSensor === "hhc") return null;
+    const { scan, mask, decay } = event.detail;
+
+    await fetch(`set/${currentSensor}/scan/${Math.round(scan * 1000)}`);
+    await fetch(`set/${currentSensor}/mask/${Math.round(mask * 1000)}`);
+    await fetch(`set/${currentSensor}/decay/${Math.round(decay * 1000)}`);
+});
+
+hhcInterval.addEventListener('hhc-timeout', async () =>
+{
+    if (currentSensor !== "hhc") return null;
+    await fetch(`set/fsrc/timeout/${Math.round(hhcInterval.threshold)}`);
+});
+
+hhcNoiseThreshold.addEventListener('hhc-threshold', async () =>
+{
+    if (currentSensor !== "hhc") return null;
+    await fetch(`set/fsrc/threshold/${Math.round(hhcNoiseThreshold.threshold)}`);
+});
+
+// hhcGain.addEventListener('hhc-gain', () => {
+// if (currentSensor !== "hhc") return null;
+//     fetch(`set/${"currentSensor"}/gain/${hhcGain.threshold}`);
+// });
+
+hhcOffset.addEventListener('hhc-offset', async () =>
+{
+    if (currentSensor !== "hhc") return null;
+    await fetch(`set/fsrc/offset/${Math.round(hhcOffset.threshold)}`);
+});
+
+hhcTrig.addEventListener('hhc_trig-threshold', async () =>
+{
+    if (currentSensor !== "hhc") return null;
+    await fetch(`set/fsrt/threshold/${Math.round(hhcTrig.threshold)}`);
+});
+// TODO: add other hhc_trig events
+
+
+// Update sensor with current data
+function updateSensorData()
+{
+    if (!data[currentSensor]) return null;
+
+    if (currentSensor === "hhc")
+    {
+        setHhcMode();
+        const { offset, threshold, timeout } = data[currentSensor]
+        const trig_threshold = data["hhc_trig"]["threshold"]
+
+        hhcInterval.threshold = timeout;
+        hhcNoiseThreshold.threshold = threshold;
+        // hhcGain.threshold = gain;
+        hhcOffset.threshold = offset;
+        hhcTrig.threshold = trig_threshold;
+        return null;
+    }
+    else
+    {
+        setDefaultMode();
+        const { note, curve, gain, scan, mask, decay, threshold } = data[currentSensor];
+
+        midiNote.value = note;
+        bezierCurve.values = curve.p;
+        triggerGain.threshold = fixedToFloat(gain, 16, 15);
+        triggerThreshold.threshold = Number(threshold);
+        parameters.setThreshold(Number(threshold));
+        parameters.setData({
+            scan: Number(scan / 1000),
+            mask: Number(mask / 1000),
+            decay: Number(decay / 1000),
+        })
+    }
+}
+
+// Helper functions
+function setDefaultMode()
+{
+    defaultContainer.toggleAttribute('disabled', false);
+    hhcContainer.toggleAttribute('disabled', true);
+}
+
+function setHhcMode()
+{
+    defaultContainer.toggleAttribute('disabled', true);
+    hhcContainer.toggleAttribute('disabled', false);
+}
+
+
+
+function saveSettings()
+{
+    console.log("Save settings");
+    //fetch("/save_params_all")
+    toggleSaveModal();
+}
+
+function toggleAboutModal()
+{
+    aboutModal.toggleAttribute('open');
+}
+
+
+function toggleSaveModal()
+{
+    saveModal.toggleAttribute('open');
+}
+
+// TODO: live curve test to be removed
+setInterval(() =>
+{
+    const values = Array.from({ length: 400 }, () =>
+        Math.floor(Math.random() * 100)
+    );
+
+    parameters.setLiveCurve(values)
+}, 2000);

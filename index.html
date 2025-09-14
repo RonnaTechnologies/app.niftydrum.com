@@ -11,340 +11,282 @@
     <!-- <link rel="manifest" href="/site.webmanifest"> -->
     <link rel="stylesheet" href="/assets/css/pico.pumpkin.min.css">
     <link rel="stylesheet" href="/assets/css/style.css">
-    <style>
-      .grid {
-        display: grid;
-        grid-template-columns: repeat(12, 1fr);
-        grid-gap: 1rem;
-      }
 
-      .col-4 {
-        grid-column: span 4;
-      }
-
-      .col {
-        grid-column: span 1;
-      }
-
-      .col-7 {
-        grid-column: span 7;
-      }
-    </style>
-
-    <script src="/assets/js/konva.min.js"></script>
+    <script src="/assets/js/utils.js" defer></script>
+    <script src="/assets/js/bezier-curves.js" defer></script>
+    <script src="/assets/js/range-slider.js" defer></script>
+    <script src="/assets/js/time-bar-chart.js" defer></script>
     <script src="/assets/js/script.js" defer></script>
-    <script>
+    <script src="/assets/js/events.js" defer></script>
+    <!-- <script src="/assets/js/firmeware.js" defer></script> -->
 
-      let firmware_upload = false
-
-      const ev = new EventSource("event")
-
-      ev.onmessage = function (e) 
-      {
-        const data = JSON.parse(e.data);
-
-        if ('value' in data)
-        {
-          document.getElementById("fsr_value").innerText = data.value
-        }
-      }
-
-      async function start_fsr_logger()
-      {
-        const resp = await fetch("/start_fsr_logger");
-        const data = await resp.json()
-      }
-
-      async function stop_fsr_logger()
-      {
-        const resp = await fetch("/stop_fsr_logger");
-        const data = await resp.json()
-      }
-
-      function hide(id)
-      {
-        document.getElementById(id).style.display = 'none'
-      }
-
-      function hide_all()
-      {
-      }
-
-
-      async function upload_firmware()
-      {
-        document.getElementById('fw_upload_button').ariaBusy = true
-        const firmware_file = document.getElementById("firmware_file").files[0]
-        const formData = new FormData();
-
-        formData.append('firmware_file', firmware_file);
-
-        const resp = await fetch('/firmware', { // Your POST endpoint
-          method: 'POST',
-          body: formData // This is your file object
-        })
-        const j = await resp.json() // if the response is a JSON object
-        console.log(j)
-
-        document.getElementById('fw_upload_button').ariaBusy = false
-
-      }
-    </script>
     <title>NiftyDrum App</title>
   </head>
 
-  <body style="min-width: 90vw;" class="container-fluid">
+  <body>
     <header>
-      <nav>
-        <ul>
-          <li>
-            <details class="dropdown">
-              <summary>
-                Sensors
-              </summary>
-              <ul dir="rtl">
-                <li><a href="#">Hi-hat Controller</a></li>
-                <li><a href="#">Hi-hat</a></li>
-                <li><a href="#">Kick</a></li>
-                <li><a href="#">Snare</a></li>
-                <li><a href="#">Crash 1</a></li>
-                <li><a href="#">Tom 1</a></li>
-                <li><a href="#">Tom 3</a></li>
-                <li><a href="#">Ride</a></li>
-                <li><a href="#">Tom 2</a></li>
-                <li><a href="#">Crash 2</a></li>
-              </ul>
-            </details>
-          </li>
-          <li><button class="primary"><svg xmlns="http://www.w3.org/2000/svg" fill="none" width="24" height="24"
-                viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
-              </svg>
-            </button></li>
-        </ul>
-        <ul>
-          <li>
-            <div style="text-align: center;"><strong>NiftyDrum</strong><br><small>by Ronna Technologies</small></div>
-          </li>
-        </ul>
-        <ul>
-          <li>
-            <button>Settings&nbsp;<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24"
-                height="24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-              </svg>
-            </button>
-            <button class="primary"> <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="24"
-                height="24" stroke-width="1.5" stroke="currentColor" class="size-6">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                  d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
-              </svg></button>
-          </li>
-        </ul>
-      </nav>
+      <hgroup>
+        <h1>NiftyDrum</h1>
+        <p>by Ronna Technologies</p>
+      </hgroup>
+
+      <button data-tooltip="About NiftyDrum" id="about" class="secondary" onclick="toggleAboutModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+          style="width: 1.5rem; height: 1.5rem; display: inline-block;">
+          <path stroke-linecap="round" stroke-linejoin="round"
+            d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" />
+        </svg>
+      </button>
+
+      <select name="sensors" id="sensors-select">
+        <option value="kick" selected>Kick</option>
+        <option value="snare">Snare</option>
+        <option value="ride">Ride</option>
+        <option value="crash1">Crash 1</option>
+        <option value="crash2">Crash 2</option>
+        <option value="tom1">Tom 1</option>
+        <option value="tom2">Tom 2</option>
+        <option value="tom3">Tom 3</option>
+        <option value="hihat">Hi-hat</option>
+        <option value="hhc">Hi-hat Controller</option>
+      </select>
+
+      <div id="save-reset-buttons">
+        <button onclick="window.location.href='/settings.html'" data-tooltip="Advanced settings" class="secondary"><svg
+            xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+            class="size-6" style="width: 1.5rem; height: 1.5rem; display: inline-block;">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.325.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.241-.438.613-.43.992a7.723 7.723 0 0 1 0 .255c-.008.378.137.75.43.991l1.004.827c.424.35.534.955.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.47 6.47 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.281c-.09.543-.56.94-1.11.94h-2.594c-.55 0-1.019-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.991a6.932 6.932 0 0 1 0-.255c.007-.38-.138-.751-.43-.992l-1.004-.827a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.086.22-.128.332-.183.582-.495.644-.869l.214-1.28Z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+          </svg>
+        </button>
+        <button data-tooltip="Save config" onclick=" toggleSaveModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+            stroke="currentColor" class="size-6" style="width: 1.5rem; height: 1.5rem; display: inline-block;">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9 3.75H6.912a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H15M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859M12 3v8.25m0 0-3-3m3 3 3-3" />
+          </svg>
+        </button>
+      </div>
     </header>
+
     <main>
-      <div class="container">
-        <div class="grid">
-          <div class="column col-4 col-span-4" style="text-align: center;">
-            Velocity curve
-            <div id="curve_container">
+      <div id="default-mode">
+        <section>
+          Note
+          <input type="number" name="midi-note" min="0" max="256" id="midi-note" value="0">
+
+          Velocity curve
+          <bezier-curve>
+            <svg id="bezier-svg" viewBox="0 -10 256 276" width="256" height="256">
+              <line id="line-p0-p1" class="control-line" x1="0" y1="128" x2="64" y2="64"></line>
+              <line id="line-p2-p3" class="control-line" x1="192" y1="192" x2="255" y2="128"></line>
+
+              <path id="bezier-curve-path" d="M 0,128 C 64,64 192,192 255,128" />
+
+              <circle class="bezier-anchor" id="p0" cx="0" cy="128" r="8"></circle>
+              <circle class="bezier-anchor" id="p1" cx="64" cy="64" r="8"></circle>
+              <circle class="bezier-anchor" id="p2" cx="192" cy="192" r="8"></circle>
+              <circle class="bezier-anchor" id="p3" cx="255" cy="128" r="8"></circle>
+            </svg>
+          </bezier-curve>
+        </section>
+
+        <section>
+          Gain
+          <range-slider min="0.1" max="5" name="gain">
+            <div class="slider-container">
+              <div class="marker">
+                <span class="label"></span>
+              </div>
+            </div>
+          </range-slider>
+        </section>
+
+        <section>
+          Threshold
+          <range-slider min="1" max="100" name="threshold" integer>
+            <div class="slider-container">
+              <div class="marker">
+                <span class="label"></span>
+              </div>
+            </div>
+          </range-slider>
+        </section>
+
+        <section style="flex:1">
+          Parameters
+          <time-bar-chart max-duration="400" norm-height="256" max-threshold="100" name="parameters">
+            <div style="position: relative">
+              <svg id="timeline" viewBox="0 0 400 300" preserveAspectRatio="none">
+                <g data-name="scan" data-scale="4">
+                  <rect class="bar" x="0" y="0" width="80" height="300" fill="var(--pico-muted-border-color)" />
+                  <rect class="resize-handle" x="75" y="0" width="3" height="300" />
+                </g>
+
+                <g data-name="mask">
+                  <rect class="bar" x="0" y="0" width="100" height="300" fill="var(--pico-mark-background-color)" />
+                  <rect class="resize-handle" x="95" y="0" width="3" height="300" />
+                </g>
+
+                <g data-name="decay">
+                  <rect class="bar" x="0" y="0" width="160" height="300"
+                    fill="var(--pico-modal-overlay-background-color)" />
+                  <rect class="resize-handle" x="155" y="0" width="3" height="300" />
+                </g>
+                <path class="curve" />
+                <path id="live-curve" />
+              </svg>
+            </div>
+
+            <div class="grid parameters">
+              <label>
+                <small>Scan (ms)</small>
+                <input type="number" name="scan" id="scan-time" min="2" max="10">
+              </label>
+              <label>
+                <small>Mask (ms)</small>
+                <input type="number" name="mask" id="mask-time" min="10" max="50">
+              </label>
+              <label>
+                <small>Decay (ms)</small>
+                <input type="number" name="decay" id="decay" min="10" max="300">
+              </label>
+            </div>
+          </time-bar-chart>
+        </section>
+      </div>
+
+      <div id="hhc-mode" disabled>
+        <section>
+          Interval (µs)
+          <range-slider min="5000" max="25000" name="hhc-timeout">
+            <div class="slider-container">
+              <div class="marker">
+                <span class="label"></span>
+              </div>
+            </div>
+          </range-slider>
+        </section>
+
+        <section>
+          Noise threshold
+          <range-slider min="10" max="100" name="hhc-threshold">
+            <div class="slider-container">
+              <div class="marker">
+                <span class="label"></span>
+              </div>
+            </div>
+          </range-slider>
+        </section>
+
+        <!-- <section>
+        Gain
+        <range-slider min="0.1" max="5" name="hhc-gain">
+          <div class="slider-container">
+            <div class="marker">
+              <span class="label"></span>
             </div>
           </div>
-          <div style="text-align: center;" class="column col-1">Gain</div>
-          <div style="text-align: center;" class="column col-7 col-span-7">Parameters</div>
+        </range-slider>
+      </section> -->
+
+        <section>
+          Offset
+          <range-slider min="1" max="127" name="hhc-offset">
+            <div class="slider-container">
+              <div class="marker">
+                <span class="label"></span>
+              </div>
+            </div>
+          </range-slider>
+        </section>
+
+        <section>
+          Trig
+          <range-slider min="200" max="2000" name="hhc_trig-threshold">
+            <div class="slider-container">
+              <div class="marker">
+                <span class="label"></span>
+              </div>
+            </div>
+          </range-slider>
+        </section>
+
+        <!-- <section>
+        Scan time & threshold
+        <div class="grid">
+          <range-slider min="0" max="64" name="hhc-scan">
+            <div class="slider-container">
+              <div class="marker">
+                <span class="label"></span>
+              </div>
+            </div>
+          </range-slider>
+          <range-slider min="0" max="64" name="hhc-scan-threshold">
+            <div class="slider-container">
+              <div class="marker">
+                <span class="label"></span>
+              </div>
+            </div>
+          </range-slider>
         </div>
+      </section> -->
       </div>
     </main>
 
     <dialog id="about-modal">
       <article>
         <header>
-          <button aria-label="Close" rel="prev" data-target="about-modal"></button>
-          <strong>About NiftyDrum App</strong>
+          <h2>About</h2>
+          <button aria-label="Close" rel="prev" onclick="toggleAboutModal()"></button>
         </header>
         <p>
-          NiftyDrum App is a <a href="https://ronnatech.com" target="_blank">Ronna Technologies</a> product.
+          <strong>NiftyDrum</strong> is a <a data-tooltip="https://ronnatech.com" href="https://ronnatech.com"
+            target="_blank">Ronna Technologies</a>
+          product.
         </p>
       </article>
     </dialog>
-    <script>
-
-      Number.prototype.clamp = function (min, max) 
-      {
-        return Math.min(Math.max(this, min), max);
-      };
-
-      var stage = new Konva.Stage(
-        {
-          container: 'curve_container',
-          width: 512,
-          height: 512,
-        });
-
-      function drag_constrained(pos)
-      {
-        return {
-          x: this.absolutePosition().x,
-          y: pos.y.clamp(0, stage.height()),
-        };
-      }
-
-      function drag(pos)
-      {
-        return {
-          x: pos.x.clamp(0, stage.width()),
-          y: pos.y.clamp(0, stage.height()),
-        };
-      }
-      // function to build anchor point
-      function buildAnchor(x, y, constrained = false) 
-      {
-
-        const settings =
-        {
-          x: x,
-          y: y,
-          radius: 12,
-          stroke: '#666',
-          fill: '#ddd',
-          strokeWidth: 2,
-          draggable: true,
-          dragBoundFunc: drag
-        };
-        if (constrained)
-        {
-          settings['dragBoundFunc'] = drag_constrained
-        }
-        var anchor = new Konva.Circle(settings);
-        layer.add(anchor);
-
-        // add hover styling
-        anchor.on('mouseover', function ()
-        {
-          document.body.style.cursor = 'pointer';
-          this.strokeWidth(4);
-        });
-
-        anchor.on('mouseout', function () 
-        {
-          document.body.style.cursor = 'default';
-          this.strokeWidth(2);
-        });
-
-        anchor.on('dragmove', function () 
-        {
-          updateDottedLines();
-        });
-
-        return anchor;
-      }
 
 
-      var layer = new Konva.Layer();
-      stage.add(layer);
+    <dialog id="save-modal">
+      <article>
+        <header>
+          <h2>Save settings</h2>
+        </header>
+        <p>
+          This will overwrite the last saved configuration with the current settings.
+        </p>
+        <footer>
+          <button class="secondary" onclick="toggleSaveModal()">
+            Cancel
+          </button>
+          <button onclick="saveSettings()">
+            Confirm
+          </button>
+        </footer>
+      </article>
+    </dialog>
 
-      // function to update line points from anchors
-      function updateDottedLines() 
-      {
-        var b = bezier;
+    <dialog id="disconnected">
+      <article>
+        <header>
+          <p>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="size-6" style="width: 2em; height: 2em;">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+            </svg>
+            <strong>Cannot detect board</strong>
+          </p>
+        </header>
+        <p>
 
-        var bezierLinePath = layer.findOne('#bezierLinePath');
+        </p>
+      </article>
+    </dialog>
 
-
-        bezierLinePath.points(
-          [
-            b.start.x(),
-            b.start.y(),
-            b.control1.x(),
-            b.control1.y(),
-            b.control2.x(),
-            b.control2.y(),
-            b.end.x(),
-            b.end.y(),
-          ]);
-      }
-
-
-      // we will use custom shape for curve
-      var bezierLine = new Konva.Shape(
-        {
-          stroke: 'orange',
-          strokeWidth: 5,
-          sceneFunc: (ctx, shape) => 
-          {
-            ctx.beginPath();
-            ctx.moveTo(bezier.start.x(), bezier.start.y());
-            ctx.bezierCurveTo(
-              bezier.control1.x(),
-              bezier.control1.y(),
-              bezier.control2.x(),
-              bezier.control2.y(),
-              bezier.end.x(),
-              bezier.end.y()
-            );
-            ctx.fillStrokeShape(shape);
-          },
-        });
-      layer.add(bezierLine);
-
-
-
-      var bezierLinePath = new Konva.Line(
-        {
-          dash: [10, 0, 0, 10],
-          strokeWidth: 3,
-          stroke: 'gray',
-          lineCap: 'round',
-          id: 'bezierLinePath',
-          opacity: 0.3,
-          points: [0, 0],
-        });
-      layer.add(bezierLinePath);
-
-      console.log(stage.height)
-      var bezier =
-      {
-        start: buildAnchor(0, stage.height(), true),
-        control1: buildAnchor(stage.width() / 4, 3 * stage.height() / 4),
-        control2: buildAnchor(3 * stage.width() / 4, stage.height() / 2),
-        end: buildAnchor(stage.width(), 0, true),
-      };
-
-      updateDottedLines();
-
-      // Function to make the stage responsive
-      function fitStageIntoParentContainer()
-      {
-        // Get the container element
-        const container = document.getElementById('curve_container');
-
-        // Make the container take up the full width
-        container.style.width = '100%';
-
-        // Get current container width
-        const containerWidth = container.offsetWidth;
-
-        // Calculate scale based on virtual width vs actual width
-        const scale = containerWidth / 512;
-
-        // Set stage dimensions and scale
-        stage.width(512 * scale);
-        stage.height(512 * scale);
-        stage.scale({ x: scale, y: scale });
-      }
-
-      // Initial fit
-      fitStageIntoParentContainer();
-
-      // Adapt the stage on window resize
-      window.addEventListener('resize', fitStageIntoParentContainer);
-
-
-    </script>
   </body>
 
 </html>
