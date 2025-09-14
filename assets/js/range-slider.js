@@ -76,7 +76,7 @@ class RangeSlider extends HTMLElement
         const normalizedValue = (this._value - this._min) / range;
         const percent = normalizedValue * 100;
 
-        this.container.style.background = `linear-gradient(to top, orange ${percent}%, transparent ${percent}%)`;
+        this.container.style.background = `linear-gradient(to top, orange ${Math.max(0.01, percent)}%, transparent ${percent}%)`;
     }
 
     updateMarker()
