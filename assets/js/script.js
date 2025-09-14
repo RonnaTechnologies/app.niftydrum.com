@@ -50,23 +50,26 @@ function fixedToFloat(rawValue, intBits, fracBits)
 }
 
 // Init
-async function getConfig()
+function getConfig()
 {
-    const response = await fetch('/get_all');
-    data = await response.json();
-    updateSensorData();
+    fetch('/get_all')
+        .then(resp => { return resp.json() })
+        .then(value =>
+        {
+            data = value
+            updateSensorData()
+        })
+        .catch(error => console.log(`error: ${error}`))
 }
 
 
-async function init()
+function init()
 {
-    await getConfig();
-    const _ = await fetch('/stop_noise_logger');
-    const __ = await fetch('/start_noise_logger');
-
+    getConfig()
+    // fetch('/stop_noise_logger').then(_ => fetch('/start_noise_logger'))
 }
 
-init();
+setTimeout(init, 250) // wait for server to start
 
 // Events handling
 sensorsSelect.addEventListener("change", async (e) =>
