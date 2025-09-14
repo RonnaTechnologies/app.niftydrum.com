@@ -11,6 +11,7 @@ ev.onmessage = function (e)
         if ('event' in data)
         {
             const event = data.event
+            console.log(event)
 
             if (event.startsWith("firmware_upload_"))
             {
@@ -19,14 +20,19 @@ ev.onmessage = function (e)
                 {
                     document.getElementById("firmware-progress").value = data.value
                 }
-                else
+
+                if (event === "firmware_upload_begin")
                 {
-                    document.getElementById("firmware-modal").toggleAttribute('open', event === "firmware_upload_begin")
+                    console.log('open firmware modal')
+                    document.getElementById("firmware-modal").toggleAttribute('open', true)
                 }
 
                 if (event === "firmware_upload_end")
                 {
+
+                    console.log('close firmware modal')
                     fw_upload = false
+                    document.getElementById("firmware-modal").toggleAttribute('open', false)
                 }
             }
             else if (!fw_upload)
