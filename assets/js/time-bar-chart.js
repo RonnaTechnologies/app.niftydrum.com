@@ -331,19 +331,23 @@ class TimeBarChart extends HTMLElement
 
   setData(data)
   {
-    this.bars.forEach(bar =>
+    setTimeout(() =>
     {
-      if (data.hasOwnProperty(bar.name))
+      this.bars.forEach(bar =>
       {
-        const value = data[bar.name];
-        bar.setWidth(value);
-
-        if (bar.input)
+        if (data.hasOwnProperty(bar.name))
         {
-          bar.input.value = value.toFixed(1);
+          const value = data[bar.name];
+          bar.setWidth(value);
+
+          if (bar.input)
+          {
+            bar.input.value = value.toFixed(1);
+          }
         }
-      }
-    });
+      });
+    }, 100);
+
   }
 }
 

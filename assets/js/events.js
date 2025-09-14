@@ -8,10 +8,10 @@ ev.onmessage = function (e)
     {
         const data = JSON.parse(e.data);
 
+
         if ('event' in data)
         {
             const event = data.event
-            console.log(event)
 
             if (event.startsWith("firmware_upload_"))
             {

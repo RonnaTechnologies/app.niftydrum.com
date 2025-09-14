@@ -63,10 +63,11 @@ function getConfig()
 }
 
 
-function init()
+async function init()
 {
+    await fetch('/stop_noise_logger')
+    await fetch('/start_noise_logger')
     getConfig()
-    // fetch('/stop_noise_logger').then(_ => fetch('/start_noise_logger'))
 }
 
 setTimeout(init, 250) // wait for server to start
@@ -84,7 +85,7 @@ sensorsSelect.addEventListener("change", async (e) =>
     await fetch(`/select/${sensor_map[currentSensor]}`)
 
     console.log(currentSensor)
-    await getConfig();
+    getConfig()
 });
 
 midiNote.addEventListener('change', async () =>
