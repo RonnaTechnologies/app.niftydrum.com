@@ -47,7 +47,12 @@ ev.onmessage = function (e)
             triggerThreshold.value = data.value
         }
 
-
+        if ('curve' in data)
+        {
+            curve_data = JSON.parse(data.curve)
+            const parameters = document.querySelector('time-bar-chart')
+            parameters.setLiveCurve(curve_data)
+        }
 
     }
     catch (err)

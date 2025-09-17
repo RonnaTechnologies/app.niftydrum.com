@@ -237,12 +237,3 @@ function toggleSaveModal()
     saveModal.toggleAttribute('open');
 }
 
-// TODO: live curve test to be removed
-setInterval(() =>
-{
-    const values = Array.from({ length: 400 }, () =>
-        Math.floor(Math.random() * 100)
-    );
-
-    parameters.setLiveCurve(values)
-}, 2000);
