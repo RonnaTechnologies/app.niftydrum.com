@@ -50,8 +50,10 @@ ev.onmessage = function (e)
         if ('curve' in data)
         {
             curve_data = JSON.parse(data.curve)
+            const total_time = 213;
+            const dt = total_time / curve_data.length
             const parameters = document.querySelector('time-bar-chart')
-            parameters.setLiveCurve(curve_data)
+            parameters.setLiveCurve(curve_data)//.map(value => value * 2))
         }
 
     }

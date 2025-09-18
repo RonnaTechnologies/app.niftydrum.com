@@ -116,23 +116,23 @@
 
         <section style="flex:1">
           Parameters
-          <time-bar-chart max-duration="400" norm-height="256" max-threshold="100" name="parameters">
+          <time-bar-chart max-duration="213" norm-height="256" max-threshold="100" name="parameters">
             <div style="position: relative">
               <svg id="timeline" viewBox="0 0 400 300" preserveAspectRatio="none">
                 <g data-name="scan" data-scale="4">
                   <rect class="bar" x="0" y="0" width="80" height="300" fill="var(--pico-muted-border-color)" />
-                  <rect class="resize-handle" x="75" y="0" width="3" height="300" />
+                  <rect class="resize-handle" x="75" y="0" width="2" height="300" />
                 </g>
 
                 <g data-name="mask">
                   <rect class="bar" x="0" y="0" width="100" height="300" fill="var(--pico-mark-background-color)" />
-                  <rect class="resize-handle" x="95" y="0" width="3" height="300" />
+                  <rect class="resize-handle" x="95" y="0" width="2" height="300" />
                 </g>
 
                 <g data-name="decay">
                   <rect class="bar" x="0" y="0" width="160" height="300"
                     fill="var(--pico-modal-overlay-background-color)" />
-                  <rect class="resize-handle" x="155" y="0" width="3" height="300" />
+                  <rect class="resize-handle" x="155" y="0" width="2" height="300" />
                 </g>
                 <path class="curve" />
                 <path id="live-curve" />
@@ -150,7 +150,7 @@
               </label>
               <label>
                 <small>Decay (ms)</small>
-                <input type="number" name="decay" id="decay" min="10" max="300">
+                <input type="number" name="decay" id="decay" min="10" max="150">
               </label>
             </div>
           </time-bar-chart>

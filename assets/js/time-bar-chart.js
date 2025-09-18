@@ -91,7 +91,7 @@ class TimeBarChart extends HTMLElement
           const maxAllowed = Math.min(bar.maxWidth, this.svgWidth - othersWidth);
           const width = Math.max(bar.minWidth, Math.min(maxAllowed, newWidth));
           rect.setAttribute("width", width * xScale);
-          handle.setAttribute("x", width - 3);
+          handle.setAttribute("x", width - handle.getAttribute("width"));
           this.positionBars();
           this.updateDecayCurve();
           return width;
@@ -162,7 +162,7 @@ class TimeBarChart extends HTMLElement
     this.bars.forEach((bar) =>
     {
       bar.group.setAttribute("transform", `translate(${currentX},0)`);
-      bar.handle.setAttribute("x", bar.getWidth() - 3);
+      bar.handle.setAttribute("x", bar.getWidth() - bar.handle.getAttribute("width"));
       currentX += bar.getWidth();
     });
   }
