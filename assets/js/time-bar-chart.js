@@ -173,19 +173,6 @@ class TimeBarChart extends HTMLElement
     this.updateDecayCurve();
   }
 
-  generateDecayCurve(startX, width, height)
-  {
-    const points = [];
-    const numPoints = Math.max(20, Math.floor(width / 2));
-    for (let i = 0; i <= numPoints; i++)
-    {
-      const x = startX + (i / numPoints) * width;
-      const t = i / numPoints;
-      const y = height * Math.exp(-5 * t);
-      points.push(`${x},${y}`);
-    }
-    return points;
-  }
 
   updateDecayCurve()
   {
