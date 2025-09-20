@@ -219,10 +219,10 @@ function setHhcMode()
 
 
 
-function saveSettings()
+async function saveSettings()
 {
     console.log("Save settings");
-    //fetch("/save_params_all")
+    await fetch("/save_params_all")
     toggleSaveModal();
 }
 

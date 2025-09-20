@@ -141,15 +141,15 @@
 
             <div class="grid parameters">
               <label>
-                <small>Scan (ms)</small>
+                <small>Scan [ms]</small>
                 <input type="number" name="scan" id="scan-time" min="2" max="10">
               </label>
               <label>
-                <small>Mask (ms)</small>
+                <small>Mask [ms]</small>
                 <input type="number" name="mask" id="mask-time" min="10" max="50">
               </label>
               <label>
-                <small>Decay (ms)</small>
+                <small>Decay [ms]</small>
                 <input type="number" name="decay" id="decay" min="10" max="150">
               </label>
             </div>
@@ -260,10 +260,18 @@
         </p>
         <footer>
           <button class="secondary" onclick="toggleSaveModal()">
-            Cancel
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="size-6" style="width: 1.5rem; height: 1.5rem; display: inline-block;">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="m9.75 9.75 4.5 4.5m0-4.5-4.5 4.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
           </button>
           <button onclick="saveSettings()">
-            Confirm
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+              stroke="currentColor" class="size-6" style="width: 1.5rem; height: 1.5rem; display: inline-block;">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
           </button>
         </footer>
       </article>
@@ -282,7 +290,7 @@
           </p>
         </header>
         <p>
-
+          Make sure the board is connected to use this app.
         </p>
       </article>
     </dialog>
