@@ -2,6 +2,13 @@
 const ev = new EventSource("event")
 let fw_upload = false
 
+function normalizeArrayToMax(arr, desiredMax)
+{
+    const currentMax = Math.max(...arr);
+    const scalingFactor = desiredMax / currentMax;
+    return arr.map(value => value * scalingFactor);
+}
+
 ev.onmessage = function (e) 
 {
     try
@@ -50,10 +57,8 @@ ev.onmessage = function (e)
         if ('curve' in data)
         {
             curve_data = JSON.parse(data.curve)
-            const total_time = 213;
-            const dt = total_time / curve_data.length
-            const parameters = document.querySelector('time-bar-chart')
-            parameters.setLiveCurve(curve_data)//.map(value => value * 2))
+            parameters.setLiveCurve(normalizeArrayToMax(curve_data, 300))//.map(value => value * 2))
+
         }
 
     }
