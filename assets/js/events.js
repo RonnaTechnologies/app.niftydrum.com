@@ -44,8 +44,11 @@ ev.onmessage = function (e)
             }
             else if (!fw_upload)
             {
-                // TODO(): handle disconnection correctly
                 document.getElementById("disconnected").toggleAttribute("open", event === "disconnect")
+                if (event === "connect")
+                {
+                    document.location = "/"
+                }
             }
         }
 
