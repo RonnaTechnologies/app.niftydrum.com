@@ -65,6 +65,7 @@ function getConfig()
 
 async function init()
 {
+    await fetch('/select/0')
     await fetch('/stop_noise_logger')
     await fetch('/start_noise_logger')
     getConfig()
