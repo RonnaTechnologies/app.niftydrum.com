@@ -21,10 +21,20 @@
   --border: var(--pico-border-width) solid var(--pico-form-element-border-color);
 }
 
+@font-face 
+{
+  font-family: 'SourceSansPro';
+  src: url('/assets/SourceSansPro.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 * {
   scroll-margin-block-start: 0.75em;
   box-sizing: border-box;
   margin-block-end: 0 !important;
+  font-family: 'SourceSansPro', 'Roboto', 'Helvetica', 'Arial', sans-serif !important;
+
 }
 
 html {
