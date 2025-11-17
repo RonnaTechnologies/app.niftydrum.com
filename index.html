@@ -162,7 +162,7 @@
       <div id="hhc-mode" disabled>
         <section>
           Interval (µs)
-          <range-slider min="5000" max="25000" name="hhc-timeout">
+          <range-slider min="5000" max="25000" name="hhc-timeout" integer>
             <div class="slider-container">
               <div class="marker">
                 <span class="label"></span>
@@ -173,7 +173,7 @@
 
         <section>
           Noise threshold
-          <range-slider min="10" max="100" name="hhc-threshold">
+          <range-slider min="10" max="100" name="hhc-threshold" integer>
             <div class="slider-container">
               <div class="marker">
                 <span class="label"></span>
@@ -195,7 +195,7 @@
 
         <section>
           Offset
-          <range-slider min="1" max="127" name="hhc-offset">
+          <range-slider min="1" max="127" name="hhc-offset" integer>
             <div class="slider-container">
               <div class="marker">
                 <span class="label"></span>
@@ -206,7 +206,7 @@
 
         <section>
           Trig
-          <range-slider min="200" max="2000" name="hhc_trig-threshold">
+          <range-slider min="200" max="2000" name="hhc_trig-threshold" integer>
             <div class="slider-container">
               <div class="marker">
                 <span class="label"></span>
@@ -244,7 +244,7 @@
           <button aria-label="Close" rel="prev" onclick="toggleAboutModal()"></button>
         </header>
         <p>
-          <strong>NiftyDrum</strong> v1.0.0 is a <a data-tooltip="https://ronnatech.com" href="https://ronnatech.com"
+          <strong>NiftyDrum</strong> v1.0.0 is a <a data-tooltip="ronnatech.com" href="https://ronnatech.com"
             target="_blank">Ronna Technologies</a>
           product.
         </p>
@@ -252,21 +252,25 @@
         <p>
           NiftyDrum App uses the following dependencies:
         <ul>
-          <li><a data-tooltip="https://github.com/pololu/libusbp" data-placement="right"
+          <li><a data-tooltip="github.com/pololu/libusbp" data-placement="right"
               href="https://github.com/pololu/libusbp" target="_blank">The Pololu USB
               Library</a> - <small>&copy; Pololu Corporation</small>
           </li>
-          <li><a data-tooltip="https://github.com/libusb/hidapi" data-placement="right"
-              href="https://github.com/libusb/hidapi" target="_blank">hidapi</a> - <small>BSD-3-Clause license</small>
+          <li><a data-tooltip="github.com/libusb/hidapi" data-placement="right" href="https://github.com/libusb/hidapi"
+              target="_blank">hidapi</a> - <small>BSD-3-Clause license</small>
           </li>
-          <li><a data-tooltip="https://github.com/vector-of-bool/cmrc" data-placement="right"
+          <li><a data-tooltip="github.com/vector-of-bool/cmrc" data-placement="right"
               href="https://github.com/vector-of-bool/cmrc" target="_blank">CMakeRC</a> - <small>MIT License</small>
           </li>
-          <li><a data-tooltip="https://github.com/RonnaTechnologies/ezserial" data-placement="right"
+          <li><a data-tooltip="github.com/RonnaTechnologies/ezserial" data-placement="right"
               href="https://github.com/RonnaTechnologies/ezserial" target="_blank">EZ Serial</a> - <small>CC0-1.0
               license</small></li>
-          <li><a data-tooltip="https://picocss.com/" data-placement="right" href="https://picocss.com/"
-              target="_blank">Pico CSS</a> -
+          <li><a data-tooltip="picocss.com" data-placement="right" href="https://picocss.com/" target="_blank">Pico
+              CSS</a> -
+            <small>MIT License</small>
+          </li>
+          <li><a data-tooltip="heroicons.com" data-placement="right" href="https://heroicons.com/"
+              target="_blank">heroicons</a> -
             <small>MIT License</small>
           </li>
         </ul>
