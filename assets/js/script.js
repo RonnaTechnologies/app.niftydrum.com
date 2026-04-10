@@ -26,6 +26,109 @@ const hhcTrig = document.querySelector('range-slider[name="hhc_trig-threshold"]'
 const aboutModal = document.querySelector('dialog#about-modal');
 const saveModal = document.querySelector('dialog#save-modal');
 
+const btnRequest = document.getElementById('btnRequest');
+const btnConnect = document.getElementById('btnConnect');
+const btnDisconnect = document.getElementById('btnDisconnect');
+const NiftyDrum = { pid: 22336, vid: 1155 };
+
+function isNifty(info)
+{
+    return info.usbProductId === NiftyDrum.pid && info.usbVendorId === NiftyDrum.vid;
+}
+
+let serialPort = null;
+let reader = null;
+let writer = null;
+
+btnRequest.addEventListener('click', async () =>
+{
+    try
+    {
+        serialPort = await navigator.serial.requestPort()
+        const info = serialPort.getInfo()
+        console.log(`Port selected: ${isNifty(info) ? 'NiftyDrum' : JSON.stringify(info)}`)
+        btnConnect.disabled = false;
+    } catch (err)
+    {
+        console.log(`Request error: ${err.message}`);
+    }
+})
+
+function setConnected(connected)
+{
+    btnConnect.disabled = connected;
+    btnDisconnect.disabled = !connected;
+    //btnSend.disabled = !connected;
+}
+
+
+async function sendAndReceive(msg, timeoutMs = 100)
+{
+    if (!writer || !reader) throw new Error("Not connected");
+
+    // Flush any leftover bytes before sending
+    // (optional but helps if device sends unsolicited data)
+    // await flushReader(rawReader);
+
+    await writer.write(msg);
+    console.log(`→ ${msg}`);
+
+    const decoder = new TextDecoder();
+    let response = '';
+
+    while (true)
+    {
+        const result = await Promise.race([
+            reader.read(),
+            new Promise(resolve => setTimeout(() => resolve({ timeout: true }), timeoutMs))
+        ]);
+
+        if (result.timeout || result.done) break;
+        response += decoder.decode(result.value, { stream: true }); // stream:true handles multi-byte chars split across chunks
+    }
+
+    // Flush decoder state
+    response += decoder.decode();
+
+    console.log(`← ${response}`);
+    return response;
+}
+
+async function serialConnect()
+{
+    try
+    {
+        await serialPort.open({
+            baudRate: 115200,
+            dataBits: 8,
+            stopBits: 1,
+            parity: "none",
+            flowControl: "none"
+        });
+
+        // Match terminal: DTR and RTS both enabled
+        await serialPort.setSignals({ dataTerminalReady: true, requestToSend: true });
+
+        console.log("Connected to serial port.");
+        setConnected(true);
+
+        const encoder = new TextEncoderStream();
+        encoder.readable.pipeTo(serialPort.writable);
+        writer = encoder.writable.getWriter();
+
+        // Reader side — lock it once here, no pipeTo, no readLoop
+        reader = serialPort.readable.getReader();
+
+        data = JSON.parse(await sendAndReceive("/get params all"))
+        updateSensorData()
+    } catch (err)
+    {
+        console.log(`Connect error: ${err.message}`);
+    }
+}
+
+btnConnect.addEventListener('click', serialConnect)
+
 function fixedToFloat(rawValue, intBits, fracBits)
 {
     // const totalBits = intBits + fracBits;
@@ -50,16 +153,18 @@ function fixedToFloat(rawValue, intBits, fracBits)
 }
 
 // Init
-function getConfig()
+async function getConfig()
 {
-    fetch('/get_all')
-        .then(resp => { return resp.json() })
-        .then(value =>
-        {
-            data = value
-            updateSensorData()
-        })
-        .catch(error => console.log(`error: ${error}`))
+
+    // fetch('/get_all')
+    //     .then(resp => { return resp.json() })
+    //     .then(value =>
+    //     {
+    //         data = value
+    //         updateSensorData()
+    //     })
+    //     .catch(error => console.log(`error: ${error}`))
+    // no line ending, matching terminal config
 }
 
 
