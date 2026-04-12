@@ -7,6 +7,11 @@ const hhcContainer = document.querySelector('#hhc-mode');
 let currentSensor = sensorsSelect.value;
 let data = null;
 
+const sensor_map = {
+    "kick": 0, "snare": 1, "hihat": 2, "crash1": 4, "tom1": 5, "tom3": 6,
+    "ride": 7, "tom2": 8, "crash2": 9
+};
+
 // Settings elements
 const midiNote = document.querySelector('#midi-note');
 const bezierCurve = document.querySelector('bezier-curve');
@@ -39,20 +44,8 @@ function isNifty(info)
 let serialPort = null;
 let reader = null;
 let writer = null;
+let data_buffer = new Uint8Array(0)
 
-btnRequest.addEventListener('click', async () =>
-{
-    try
-    {
-        serialPort = await navigator.serial.requestPort()
-        const info = serialPort.getInfo()
-        console.log(`Port selected: ${isNifty(info) ? 'NiftyDrum' : JSON.stringify(info)}`)
-        btnConnect.disabled = false;
-    } catch (err)
-    {
-        console.log(`Request error: ${err.message}`);
-    }
-})
 
 function setConnected(connected)
 {
@@ -61,36 +54,60 @@ function setConnected(connected)
     //btnSend.disabled = !connected;
 }
 
+async function send(msg)
+{
+    if (!writer) throw new Error("Not connected");
+    await writer.write(msg);
+    console.log(`→ ${msg}`);
+}
+
+function appendBuffer(a, b)
+{
+    const merged = new Uint8Array(a.length + b.length);
+    merged.set(a, 0);
+    merged.set(b, a.length);
+    return merged;
+}
+
+
+let pendingRead = null;
 
 async function sendAndReceive(msg, timeoutMs = 100)
 {
-    if (!writer || !reader) throw new Error("Not connected");
-
-    // Flush any leftover bytes before sending
-    // (optional but helps if device sends unsolicited data)
-    // await flushReader(rawReader);
-
-    await writer.write(msg);
-    console.log(`→ ${msg}`);
-
-    const decoder = new TextDecoder();
     let response = '';
 
-    while (true)
+    for (let i = 0; i < 5 && response.length == 0; ++i)
     {
-        const result = await Promise.race([
-            reader.read(),
-            new Promise(resolve => setTimeout(() => resolve({ timeout: true }), timeoutMs))
-        ]);
 
-        if (result.timeout || result.done) break;
-        response += decoder.decode(result.value, { stream: true }); // stream:true handles multi-byte chars split across chunks
+        if (!writer || !reader) throw new Error("Not connected");
+
+        await writer.write(msg);
+        console.log(`→ ${msg}`);
+
+        while (true)
+        {
+            // Reuse the pending read if one is already in flight
+            if (!pendingRead) pendingRead = reader.read();
+
+            const result = await Promise.race([
+                pendingRead,
+                new Promise(resolve => setTimeout(() => resolve({ timeout: true }), timeoutMs))
+            ]);
+
+            if (result.timeout) break;
+
+            pendingRead = null;
+
+            if (result.done) break;
+            data_buffer = appendBuffer(data_buffer, result.value);
+        }
+
+        const decoder = new TextDecoder();
+        response = decoder.decode(data_buffer);
+        data_buffer = new Uint8Array(0);
+
+        console.log(`← ${response}`);
     }
-
-    // Flush decoder state
-    response += decoder.decode();
-
-    console.log(`← ${response}`);
     return response;
 }
 
@@ -119,8 +136,7 @@ async function serialConnect()
         // Reader side — lock it once here, no pipeTo, no readLoop
         reader = serialPort.readable.getReader();
 
-        data = JSON.parse(await sendAndReceive("/get params all"))
-        updateSensorData()
+        getConfig()
     } catch (err)
     {
         console.log(`Connect error: ${err.message}`);
@@ -128,6 +144,28 @@ async function serialConnect()
 }
 
 btnConnect.addEventListener('click', serialConnect)
+
+btnRequest.addEventListener('click', async () =>
+{
+    try
+    {
+        serialPort = await navigator.serial.requestPort()
+        const info = serialPort.getInfo()
+        console.log(`Port selected: ${isNifty(info) ? 'NiftyDrum' : JSON.stringify(info)}`)
+        btnConnect.disabled = false;
+    } catch (err)
+    {
+        console.log(`Request error: ${err.message}`);
+    }
+})
+
+async function getConfig()
+{
+    await send(`$${sensor_map[currentSensor]}`)
+    data = JSON.parse(await sendAndReceive("/get params all"))
+    updateSensorData()
+}
+
 
 function fixedToFloat(rawValue, intBits, fracBits)
 {
@@ -152,43 +190,16 @@ function fixedToFloat(rawValue, intBits, fracBits)
     return floatValue.toFixed(2);
 }
 
-// Init
-async function getConfig()
-{
-
-    // fetch('/get_all')
-    //     .then(resp => { return resp.json() })
-    //     .then(value =>
-    //     {
-    //         data = value
-    //         updateSensorData()
-    //     })
-    //     .catch(error => console.log(`error: ${error}`))
-    // no line ending, matching terminal config
-}
 
 
-async function init()
-{
-    await fetch('/select/0')
-    await fetch('/stop_noise_logger')
-    await fetch('/start_noise_logger')
-    getConfig()
-}
-
-setTimeout(init, 250) // wait for server to start
 
 // Events handling
 sensorsSelect.addEventListener("change", async (e) =>
 {
     currentSensor = e.target.value;
 
-    const sensor_map = {
-        "kick": 0, "snare": 1, "hihat": 2, "crash1": 4, "tom1": 5, "tom3": 6,
-        "ride": 7, "tom2": 8, "crash2": 9
-    };
-
-    await fetch(`/select/${sensor_map[currentSensor]}`)
+    // await fetch(`/select/${sensor_map[currentSensor]}`)
+    await send(`$${sensor_map[currentSensor]}`)
 
     console.log(currentSensor)
     getConfig()
