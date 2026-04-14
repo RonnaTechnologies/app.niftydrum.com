@@ -208,7 +208,8 @@ sensorsSelect.addEventListener("change", async (e) =>
 midiNote.addEventListener('change', async () =>
 {
     if (currentSensor === "hhc") return null;
-    await fetch(`set/${currentSensor}/note/${Number(midiNote.value)}`);
+    await sendAndReceive(`/set ${currentSensor} note ${Number(midiNote.value)}`)
+    // await fetch(`set/${currentSensor}/note/${Number(midiNote.value)}`);
 });
 
 bezierCurve.addEventListener('curve', async (e) =>
@@ -234,14 +235,16 @@ bezierCurve.addEventListener('curve', async (e) =>
 triggerGain.addEventListener('gain', async () =>
 {
     if (currentSensor === "hhc") return null;
-    await fetch(`set/${currentSensor}/gain/${triggerGain.threshold.toFixed(2)}`);
+    // await fetch(`set/${currentSensor}/gain/${triggerGain.threshold.toFixed(2)}`);
+    await sendAndReceive(`/set ${currentSensor} gain ${triggerGain.threshold.toFixed(2)}`)
 });
 
 triggerThreshold.addEventListener('threshold', async () =>
 {
     if (currentSensor === "hhc") return null;
     parameters.setThreshold(triggerThreshold.threshold);
-    await fetch(`set/${currentSensor}/threshold/${Math.round(triggerThreshold.threshold)}`);
+    // await fetch(`set/${currentSensor}/threshold/${Math.round(triggerThreshold.threshold)}`);
+    await sendAndReceive(`/set ${currentSensor} threshold ${Math.round(triggerThreshold.threshold)}`)
 });
 
 parameters.addEventListener('parameters', async (event) =>
@@ -249,9 +252,13 @@ parameters.addEventListener('parameters', async (event) =>
     if (currentSensor === "hhc") return null;
     const { scan, mask, decay } = event.detail;
 
-    await fetch(`set/${currentSensor}/scan/${Math.round(scan * 1000)}`);
-    await fetch(`set/${currentSensor}/mask/${Math.round(mask * 1000)}`);
-    await fetch(`set/${currentSensor}/decay/${Math.round(decay * 1000)}`);
+    // await fetch(`set/${currentSensor}/scan/${Math.round(scan * 1000)}`);
+    // await fetch(`set/${currentSensor}/mask/${Math.round(mask * 1000)}`);
+    // await fetch(`set/${currentSensor}/decay/${Math.round(decay * 1000)}`);
+
+    await sendAndReceive(`/set ${currentSensor} scan ${Math.round(scan * 1000)}`)
+    await sendAndReceive(`/set ${currentSensor} mask ${Math.round(mask * 1000)}`)
+    await sendAndReceive(`/set ${currentSensor} decay ${Math.round(decay * 1000)}`)
 });
 
 hhcInterval.addEventListener('hhc-timeout', async () =>
