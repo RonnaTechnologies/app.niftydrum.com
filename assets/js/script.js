@@ -264,13 +264,13 @@ parameters.addEventListener('parameters', async (event) =>
 hhcInterval.addEventListener('hhc-timeout', async () =>
 {
     if (currentSensor !== "hhc") return null;
-    await fetch(`set/fsrc/timeout/${Math.round(hhcInterval.threshold)}`);
+    await sendAndReceive(`/set fsrc timeout ${Math.round(hhcInterval.threshold)}`)
 });
 
 hhcNoiseThreshold.addEventListener('hhc-threshold', async () =>
 {
     if (currentSensor !== "hhc") return null;
-    await fetch(`set/fsrc/threshold/${Math.round(hhcNoiseThreshold.threshold)}`);
+    await sendAndReceive(`/set fsrc threshold ${Math.round(hhcNoiseThreshold.threshold)}`);
 });
 
 // hhcGain.addEventListener('hhc-gain', () => {
@@ -281,13 +281,13 @@ hhcNoiseThreshold.addEventListener('hhc-threshold', async () =>
 hhcOffset.addEventListener('hhc-offset', async () =>
 {
     if (currentSensor !== "hhc") return null;
-    await fetch(`set/fsrc/offset/${Math.round(hhcOffset.threshold)}`);
+    await sendAndReceive(`/set fsrc offset ${Math.round(hhcOffset.threshold)}`);
 });
 
 hhcTrig.addEventListener('hhc_trig-threshold', async () =>
 {
     if (currentSensor !== "hhc") return null;
-    await fetch(`set/fsrt/threshold/${Math.round(hhcTrig.threshold)}`);
+    await sendAndReceive(`/set fsrt threshold ${Math.round(hhcTrig.threshold)}`);
 });
 // TODO: add other hhc_trig events
 
