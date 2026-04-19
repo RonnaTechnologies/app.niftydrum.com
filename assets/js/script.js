@@ -33,7 +33,6 @@ const saveModal = document.querySelector('dialog#save-modal');
 
 const btnRequest = document.getElementById('btnRequest');
 const btnConnect = document.getElementById('btnConnect');
-const btnDisconnect = document.getElementById('btnDisconnect');
 const NiftyDrum = { pid: 22336, vid: 1155 };
 
 function isNifty(info)
@@ -46,12 +45,15 @@ let reader = null;
 let writer = null;
 let data_buffer = new Uint8Array(0)
 
+const container = document.getElementById('container');
+container.style.display = 'none'
+
 
 function setConnected(connected)
 {
+    btnRequest.disabled = true;
     btnConnect.disabled = connected;
-    btnDisconnect.disabled = !connected;
-    //btnSend.disabled = !connected;
+    container.style.display = 'block'
 }
 
 async function send(msg)
