@@ -220,16 +220,14 @@ bezierCurve.addEventListener('curve', async (e) =>
         subArray.map(num => parseInt(num, 10))
     );
 
-    const jsonStr = JSON.stringify({ p: curveData });
-    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const jsonStr = JSON.stringify(curveData);
 
-    const formData = new FormData();
-    formData.append('file', blob, 'json_curve');
+    await send(`/set curve ${currentSensor} ${jsonStr}`)
 
-    await fetch('/curve', {
-        method: 'POST',
-        body: formData,
-    });
+    // await fetch('/curve', {
+    //     method: 'POST',
+    //     body: formData,
+    // });
 });
 
 triggerGain.addEventListener('gain', async () =>
